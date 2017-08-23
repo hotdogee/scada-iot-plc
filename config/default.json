@@ -1,0 +1,12 @@
+{
+  "supervisor" : {
+    //"url": "http://localhost:8081"
+    "url": "http://api.scada.hanl.in"
+  },
+  "amqp" : {
+    "url": "amqp://localhost"
+  },
+  "serial" : {
+    "port": "auto"
+  }
+}
