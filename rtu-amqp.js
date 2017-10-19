@@ -209,27 +209,6 @@ function get_plc_settings() {
         ]
       },
       {
-        name: '渦輪1後',
-        type: 'nhr5200',
-        addr: 14,
-        fc03: [
-          {
-            addr: 0,
-            name: '壓力',
-            unit: 'bar',
-            min: 0,
-            max: 4
-          },
-          {
-            addr: 2,
-            name: '溫度',
-            unit: '℃',
-            min: -200,
-            max: 650
-          }
-        ]
-      },
-      {
         name: '尾水箱',
         type: 'nhr5200',
         addr: 21,
@@ -334,20 +313,20 @@ function get_plc_settings() {
           }
         ]
       },
-      {
-        name: '軸心1',
-        type: 'nhr2400',
-        addr: 62,
-        fc03: [
-          {
-            addr: 0,
-            name: '轉速',
-            unit: 'Hz',
-            min: 0,
-            max: 100
-          }
-        ]
-      },
+      // {
+      //   name: '軸心1',
+      //   type: 'nhr2400',
+      //   addr: 62,
+      //   fc03: [
+      //     {
+      //       addr: 0,
+      //       name: '轉速',
+      //       unit: 'Hz',
+      //       min: 0,
+      //       max: 100
+      //     }
+      //   ]
+      // },
       {
         name: '軸心1',
         type: 'nhr5200',
@@ -376,20 +355,69 @@ function get_plc_settings() {
           }
         ]
       },
+      // {
+      //   name: '主排水管',
+      //   type: 'sinldg',
+      //   addr: 22,
+      //   fc04: [
+      //     {
+      //       addr: 4112,
+      //       name: '流量',
+      //       unit: 'm3/h',
+      //       min: 0,
+      //       max: 60
+      //     }
+      //   ]
+      // },
       {
         name: '主排水管',
-        type: 'sinldg',
-        addr: 22,
+        type: 'gpe',
+        addr: 9,
         fc04: [
           {
-            addr: 4112,
-            name: '流量',
-            unit: 'm3/h',
+            addr: 167,
+            name: '質量流率',
+            unit: 't/h',
             min: 0,
-            max: 60
-          }
+            max: 140
+          },
+          {
+            addr: 169,
+            name: '密度',
+            unit: 'g/cm3',
+            min: 0.2,
+            max: 3
+          },
+          {
+            addr: 171,
+            name: '溫度',
+            unit: '℃',
+            min: 0,
+            max: 100
+          },
+      //     {
+      //       addr: 173,
+      //       name: '體積流率',
+      //       unit: 'm3/h',
+      //       min: 0,
+      //       max: 140
+      //     },
+      //     {
+      //       addr: 175,
+      //       name: '累積質量',
+      //       unit: 'kg',
+      //       min: 0,
+      //       max: 100
+      //     },
+      //     {
+      //       addr: 177,
+      //       name: '累積體積',
+      //       unit: 'm3',
+      //       min: 0,
+      //       max: 100
+      //     },
         ]
-      },
+      }
     ]
   }
 }
@@ -454,6 +482,7 @@ function s16_float_le(reg) {
     }
   }
 }
+
 function float_be(reg) {
   return buffer => {
     return {
@@ -462,6 +491,14 @@ function float_be(reg) {
       value: buffer.readFloatBE(),
       time: (new Date).toJSON()
     }
+  }
+}
+
+function float_be_x(length) {
+  return (buffer) => {
+    return _.range(0, 4*length, 4).map((offset) => {
+      return buffer.readFloatBE(offset)
+    })
   }
 }
 
@@ -591,29 +628,43 @@ var RTU = {
       return new Promise(async (resolve, reject) => {
         let max = 2
         for (let i=0; i<max; i++) {
-          var data = await Promise.all(rtu.fc03.map(reg =>
-          master.readHoldingRegisters(rtu.addr, reg.addr, 2, s16_uint32_le_d1000(reg)))).catch(err => {
-            if (i+1 == max) {
-              console.log('RTU.nhr2400.read', rtu.name, rtu.addr, err)
-              return [
-                {
-                  "name": "轉速",
-                  "unit": "Hz",
-                  "value": -1,
-                  "time": (new Date).toJSON()
-                }
-              ]
-            }
-          })
-          if (data) {
-            let result = {
-              name: rtu.name,
-              addr: rtu.addr,
-              reads: data
-            }
-            resolve(result)
-            break
+          // var data = await Promise.all(rtu.fc03.map(reg =>
+          // master.readHoldingRegisters(rtu.addr, reg.addr, 2, s16_uint32_le_d1000(reg)))).catch(err => {
+          //   if (i+1 == max) {
+          //     console.log('RTU.nhr2400.read', rtu.name, rtu.addr, err)
+          //     return [
+          //       {
+          //         "name": "轉速",
+          //         "unit": "Hz",
+          //         "value": -1,
+          //         "time": (new Date).toJSON()
+          //       }
+          //     ]
+          //   }
+          // })
+          // if (data) {
+          //   let result = {
+          //     name: rtu.name,
+          //     addr: rtu.addr,
+          //     reads: data
+          //   }
+          //   resolve(result)
+          //   break
+          // }
+          let result = {
+            name: rtu.name,
+            addr: rtu.addr,
+            reads: [
+              {
+                "name": "轉速",
+                "unit": "Hz",
+                "value": -1,
+                "time": (new Date).toJSON()
+              }
+            ]
           }
+          resolve(result)
+          break
         }
       })
     }
@@ -649,6 +700,44 @@ var RTU = {
         }
       })
     }
+  },
+  gpe: {
+    read: (master, rtu) => {
+      return new Promise(async (resolve, reject) => {
+        let max = 2
+        let promise = null
+        for (let i=0; i<max; i++) {
+          let length = 3
+          promise = master.readInputRegisters(rtu.addr, 167, 2*length, float_be_x(length))
+          let data = await promise.catch(err => {
+            if (i+1 == max) {
+              console.log('RTU.gpe.read', rtu.name, rtu.addr, err)
+              reject(err)
+            }
+          })
+          if (data) {
+            let result = {
+              name: rtu.name,
+              addr: rtu.addr,
+              reads: []
+            }
+            for (let i in rtu.fc04) {
+              if (rtu.fc04[i].unit == 't/h') {
+                data[i] *= 3.6 // convert kg/s to t/h
+              }
+              result.reads[i] = {
+                name: rtu.fc04[i].name,
+                unit: rtu.fc04[i].unit,
+                value: data[i],
+                time: (new Date).toJSON()
+              }
+            }
+            resolve(result)
+            break
+          }
+        }
+      })
+    }
   }
 }
 
@@ -670,9 +759,12 @@ async function main() {
   }
   // create ModbusMaster instance and pass the serial port object
   var master = new modbus.ModbusMaster(new SerialPort(serial, {
-    baudrate: 9600
+    baudrate: 9600, // 9600-8-N-1
+    dataBits: 8,
+    parity: 'none',
+    stopBits: 1
   }), {
-    endPacketTimeout: 19,//19,
+    endPacketTimeout: 19,
     queueTimeout: 50,
     responseTimeout: 250,
     //debug: true
