@@ -4,7 +4,11 @@
   "description": "SCADA/IoT PLC System handles communication with RTUs through MODBUS, and with the Supervisor through WebSockets",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "csv": "node amqp-csv.js",
+    "login": "node login.js",
+    "feathers": "node amqp-feathers.js",
+    "rtu": "node rtu-amqp.js --serial /dev/ttyUSB0"
   },
   "author": "",
   "license": "ISC",

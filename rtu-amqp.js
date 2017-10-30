@@ -718,7 +718,7 @@ var RTU = {
           if (data) {
             let result = {
               name: rtu.name,
-              addr: rtu.addr,
+              addr: 25, //rtu.addr,
               reads: []
             }
             for (let i in rtu.fc04) {
