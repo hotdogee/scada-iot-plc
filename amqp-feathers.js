@@ -53,7 +53,13 @@ var logger = new (winston.Logger)({
           return options.timestamp() + ' ' + options.level[0].toUpperCase() + ' ' + (options.message ? options.message : '') +
             (options.meta && Object.keys(options.meta).length ? JSON.stringify(options.meta, null, 2) : '' );
         }
-      })
+      }),
+      new winston.transports.File({
+        filename: 'error.log',
+        level: 'error',
+        maxsize: 4 * 1024 * 1024,
+        maxFiles: 10,
+      }),
     ]
 });
 const util = require('util');
@@ -70,6 +76,11 @@ const supervisor = feathers()
   .configure(auth({
     storage: localStorage
   }))
+
+supervisor.on('reauthentication-error', err => {
+  logger.error('reauthentication-error:', err)
+  // process.exit()
+})
 
 async function amqpFeathers() {
   // console.log(localStorage.getItem('feathers-jwt'))

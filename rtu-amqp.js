@@ -125,6 +125,69 @@ function get_plc_settings() {
         ]
       },
       {
+        name: '渦輪2前',
+        type: 'nhr5200',
+        addr: 5,
+        fc03: [
+          {
+            addr: 0,
+            name: '壓力',
+            unit: 'bar',
+            min: 0,
+            max: 50
+          },
+          {
+            addr: 2,
+            name: '溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '渦輪2後',
+        type: 'nhr5200',
+        addr: 6,
+        fc03: [
+          {
+            addr: 0,
+            name: '壓力',
+            unit: 'bar',
+            min: 0,
+            max: 16
+          },
+          {
+            addr: 2,
+            name: '溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '大穩壓桶1',
+        type: 'nhr5200',
+        addr: 7,
+        fc03: [
+          {
+            addr: 0,
+            name: '壓力',
+            unit: 'bar',
+            min: 0,
+            max: 10
+          },
+          {
+            addr: 2,
+            name: '溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
         name: '上貨櫃前',
         type: 'nhr5200',
         addr: 10,
@@ -355,20 +418,62 @@ function get_plc_settings() {
           }
         ]
       },
-      // {
-      //   name: '主排水管',
-      //   type: 'sinldg',
-      //   addr: 22,
-      //   fc04: [
-      //     {
-      //       addr: 4112,
-      //       name: '流量',
-      //       unit: 'm3/h',
-      //       min: 0,
-      //       max: 60
-      //     }
-      //   ]
-      // },
+      {
+        name: '軸心2',
+        type: 'nhr5200',
+        addr: 50,
+        fc03: [
+          {
+            addr: 0,
+            name: '入水測溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '軸心2',
+        type: 'nhr5200',
+        addr: 51,
+        fc03: [
+          {
+            addr: 0,
+            name: '發電機測溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '變速齒輪箱2',
+        type: 'nhr5200',
+        addr: 52,
+        fc03: [
+          {
+            addr: 2,
+            name: '溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '排水管2',
+        type: 'sinldg',
+        addr: 26,
+        fc04: [
+          {
+            addr: 4112,
+            name: '流量',
+            unit: 'm3/h',
+            min: 0,
+            max: 60
+          }
+        ]
+      },
       {
         name: '主排水管',
         type: 'gpe',
