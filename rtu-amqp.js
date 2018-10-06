@@ -32,6 +32,9 @@
 // Write to csv file (100MB per file with total max size limit)
 // Send to RabbitMQ where workers try to send to server
 // (no data loss if internet fail, minimum data loss if power failure)
+//
+// node rtu-amqp.js --serial=/dev/ttyUSB0
+//
 const config = require('config')
 
 // parse arguments
@@ -95,6 +98,13 @@ function get_plc_settings() {
         addr: 1,
         fc03: [
           {
+            addr: 0,
+            name: '壓力',
+            unit: 'bar',
+            min: 0,
+            max: 50
+          },
+          {
             addr: 2,
             name: '溫度',
             unit: '℃',
@@ -114,6 +124,69 @@ function get_plc_settings() {
             unit: 'bar',
             min: 0,
             max: 16
+          },
+          {
+            addr: 2,
+            name: '溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '渦輪2前',
+        type: 'nhr5200',
+        addr: 5,
+        fc03: [
+          {
+            addr: 0,
+            name: '壓力',
+            unit: 'bar',
+            min: 0,
+            max: 50
+          },
+          {
+            addr: 2,
+            name: '溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '渦輪2後',
+        type: 'nhr5200',
+        addr: 6,
+        fc03: [
+          {
+            addr: 0,
+            name: '壓力',
+            unit: 'bar',
+            min: 0,
+            max: 16
+          },
+          {
+            addr: 2,
+            name: '溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '大穩壓桶1',
+        type: 'nhr5200',
+        addr: 7,
+        fc03: [
+          {
+            addr: 0,
+            name: '壓力',
+            unit: 'bar',
+            min: 0,
+            max: 10
           },
           {
             addr: 2,
@@ -355,20 +428,48 @@ function get_plc_settings() {
           }
         ]
       },
-      // {
-      //   name: '主排水管',
-      //   type: 'sinldg',
-      //   addr: 22,
-      //   fc04: [
-      //     {
-      //       addr: 4112,
-      //       name: '流量',
-      //       unit: 'm3/h',
-      //       min: 0,
-      //       max: 60
-      //     }
-      //   ]
-      // },
+      {
+        name: '軸心2',
+        type: 'nhr5200',
+        addr: 50,
+        fc03: [
+          {
+            addr: 0,
+            name: '入水測溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '軸心2',
+        type: 'nhr5200',
+        addr: 51,
+        fc03: [
+          {
+            addr: 0,
+            name: '發電機測溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
+        name: '排水管2',
+        type: 'sinldg',
+        addr: 26,
+        fc04: [
+          {
+            addr: 4112,
+            name: '流量',
+            unit: 'm3/h',
+            min: 0,
+            max: 60
+          }
+        ]
+      },
       {
         name: '主排水管',
         type: 'gpe',
@@ -759,7 +860,7 @@ async function main() {
   }
   // create ModbusMaster instance and pass the serial port object
   var master = new modbus.ModbusMaster(new SerialPort(serial, {
-    baudrate: 9600, // 9600-8-N-1
+    baudRate: 9600, // 9600-8-N-1
     dataBits: 8,
     parity: 'none',
     stopBits: 1
