@@ -32,6 +32,9 @@
 // Write to csv file (100MB per file with total max size limit)
 // Send to RabbitMQ where workers try to send to server
 // (no data loss if internet fail, minimum data loss if power failure)
+//
+// node rtu-amqp.js --serial=/dev/ttyUSB0
+//
 const config = require('config')
 
 // parse arguments
