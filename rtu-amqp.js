@@ -49,10 +49,6 @@ const SerialPort = require('serialport');
 const modbus = require("modbus-rtu");
 const amqplib = require('amqplib');
 
-// connect to ampq server
-var ampq = amqplib.connect(argv.ampqstr);
-// var ampq = amqplib.connect('amqp://localhost');
-
 function get_uuid() {
   return new Promise((resolve, reject) => {
     require("machine-uuid")((uuid) => { resolve(uuid); });
@@ -94,6 +90,13 @@ function get_plc_settings() {
         type: 'nhr5200',
         addr: 1,
         fc03: [
+          {
+            addr: 0,
+            name: '壓力',
+            unit: 'bar',
+            min: 0,
+            max: 50
+          },
           {
             addr: 2,
             name: '溫度',
@@ -848,11 +851,25 @@ var RTU = {
 
 async function main() {
   // get machine uuid
-  var uuid = (await get_uuid()).replace(/-/g, '');
+  const uuid = (await get_uuid()).replace(/-/g, '');
   console.log('Machine UUID:', uuid);
 
-  var hostname = os.hostname();
+  const hostname = os.hostname();
   console.log('Hostname:', hostname);
+
+  // assert ampq reads exchange
+  const ex_reads = 'reads';
+  // connect to ampq server
+  try {
+    const connection = await amqplib.connect(argv.ampqstr);
+    var channel = await connection.createChannel();
+    const ok = await channel.assertExchange(ex_reads, 'fanout');
+    console.log('reads exchange:', ok); // { exchange: 'reads' }
+  } catch (e) {
+    console.error('Error:', e.message);
+    // return;
+    process.exit()
+  }
 
   // auto detect or try to use specified serial port
   try {
@@ -860,11 +877,12 @@ async function main() {
     console.log('Serial port:', serial);
   } catch (e) {
     console.error('Error:', e.message);
-    return;
+    // return;
+    process.exit()
   }
   // create ModbusMaster instance and pass the serial port object
-  var master = new modbus.ModbusMaster(new SerialPort(serial, {
-    baudrate: 9600, // 9600-8-N-1
+  const master = new modbus.ModbusMaster(new SerialPort(serial, {
+    baudRate: 9600, // 9600-8-N-1
     dataBits: 8,
     parity: 'none',
     stopBits: 1
@@ -874,18 +892,6 @@ async function main() {
     responseTimeout: 250,
     //debug: true
   });
-
-  // assert ampq reads exchange
-  var ex_reads = 'reads';
-  var channel = await ampq.then(function (conn) {
-    // conn is a ChannelModel object
-    return conn.createChannel();
-  }).then(async function (ch) {
-    // ch is a Channel object
-    var ok = await ch.assertExchange(ex_reads, 'fanout');
-    console.log('reads exchange:', ok); // { exchange: 'reads' }
-    return ch;
-  }).catch(console.warn);
 
   var ps = get_plc_settings();
   var i = 1;
@@ -901,7 +907,7 @@ async function main() {
         reads: result
       }
       console.log(JSON.stringify(msg, null, 1));
-      channel.publish(ex_reads, '', new Buffer(JSON.stringify(msg)), { persistent: true });
+      channel.publish(ex_reads, '', Buffer.from(JSON.stringify(msg)), { persistent: true });
       console.log(t, i++);
     } catch (e) {
       console.error('Error:', e.message);

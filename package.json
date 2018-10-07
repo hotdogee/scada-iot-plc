@@ -4,27 +4,23 @@
   "description": "SCADA/IoT PLC System handles communication with RTUs through MODBUS, and with the Supervisor through WebSockets",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "csv": "node amqp-csv.js",
-    "login": "node login.js",
-    "feathers": "node amqp-feathers.js",
-    "rtu": "node rtu-amqp.js --serial /dev/ttyUSB0"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "amqplib": "^0.5.1",
-    "config": "^1.26.1",
-    "console-stamp": "^0.2.5",
-    "feathers-client": "^2.3.0",
-    "filesize-parser": "^1.4.1",
-    "json2csv": "^3.11.0",
-    "lodash": "^4.17.4",
-    "machine-uuid": "^1.0.10",
+    "amqplib": "^0.5.2",
+    "config": "^1.31.0",
+    "console-stamp": "^0.2.6",
+    "feathers-client": "^2.4.0",
+    "filesize-parser": "^1.5.0",
+    "json2csv": "^3.11.5",
+    "lodash": "^4.17.10",
+    "machine-uuid": "^1.2.0",
     "minimist": "^1.2.0",
     "modbus-rtu": "^0.2.1",
     "node-persist": "^2.1.0",
-    "serialport": "^5.0.0",
-    "winston": "^2.3.1"
+    "serialport": "^7.0.2",
+    "winston": "^2.4.4"
   }
 }
