@@ -457,6 +457,20 @@ function get_plc_settings() {
         ]
       },
       {
+        name: '變速齒輪箱2',
+        type: 'nhr5200',
+        addr: 52,
+        fc03: [
+          {
+            addr: 2,
+            name: '溫度',
+            unit: '℃',
+            min: -200,
+            max: 650
+          }
+        ]
+      },
+      {
         name: '排水管2',
         type: 'sinldg',
         addr: 26,
