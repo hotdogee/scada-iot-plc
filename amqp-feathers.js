@@ -79,7 +79,7 @@ const supervisor = feathers()
 
 supervisor.on('reauthentication-error', err => {
   logger.error('reauthentication-error:', err)
-  // process.exit()
+  process.exit()
 })
 
 async function amqpFeathers() {
@@ -136,13 +136,15 @@ async function amqpFeathers() {
       logs.create(message, params).then(log => {
         // results adds a field: "_id": "DO5DyBX0lz4suuzi"
         logger.info('logs.create: ', log)
+        // acknowledge message sucessfully processed
+        channel.ack(msg)
       }).catch(err => {
         logger.error('logs.create:', err)
-        // process.exit()
+        // requeue the message
+        channel.nack(msg)
+        // exit and let pm2 restart auth
+        process.exit()
       })
-
-      // acknowledge message sucessfully processed
-      channel.ack(msg)
     }
   })
 }
