@@ -71,7 +71,7 @@ localStorage.setItem = localStorage.setItemSync
 localStorage.getItem = localStorage.getItemSync
 
 const supervisor = feathers()
-  .configure(socketio(io(argv.supervisor)))
+  .configure(socketio(io(argv.supervisor), { timeout: 10000 }))
   .configure(hooks())
   .configure(auth({
     storage: localStorage
@@ -126,7 +126,7 @@ async function amqpFeathers() {
   var ok = await channel.assertQueue(q_feathers)
   console.log('logger queue:', ok) // { queue: 'logger', messageCount: 0, consumerCount: 0 }
   var ok = await channel.bindQueue(q_feathers, ex_reads, '') // {}
-  var ok = await channel.prefetch(10)
+  var ok = await channel.prefetch(20)
   var ok = await channel.consume(q_feathers, function (msg) { // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
     if (msg !== null) {
       logger.info(`Got message: ${msg.fields.deliveryTag}`)
