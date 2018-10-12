@@ -6,7 +6,7 @@ const auth = require('feathers-authentication-client')
 const io = require('socket.io-client')
 const config = require('config')
 const winston = require('winston')
-var logger = new (winston.Logger)({
+const logger = new (winston.Logger)({
     transports: [
       new (winston.transports.Console)({
         // setup console logging with timestamps
@@ -16,11 +16,11 @@ var logger = new (winston.Logger)({
         },
         formatter: function(options) {
           return options.timestamp() + ' ' + options.level[0].toUpperCase() + ' ' + (options.message ? options.message : '') +
-            (options.meta && Object.keys(options.meta).length ? JSON.stringify(options.meta, null, 2) : '' );
+            (options.meta && Object.keys(options.meta).length ? JSON.stringify(options.meta, null, 2) : '' )
         }
       })
     ]
-});
+})
 // const Storage = require('dom-storage')
 // var localStorage = new Storage('./localStorage.json')
 const localStorage = require('node-persist')
@@ -29,6 +29,7 @@ localStorage.initSync();
 localStorage.setItem = localStorage.setItemSync
 localStorage.getItem = localStorage.getItemSync
 
+logger.info(`Connecting to feathers server: ${config.get('supervisor.url')}`)
 const socket = io(config.get('supervisor.url'))
 
 const supervisor = feathers()
@@ -54,14 +55,17 @@ supervisor.authenticate({
       $select: [ 'logTime' ], // return only the id field
       $sort: {
         logTime: -1
-      },
-      logTime: {
-        $gt: new Date((new Date().getTime() - 1*60*1000)).toISOString() // find all logs within 1 minute
       }
+      // logTime: {
+      //   $gt: new Date((new Date().getTime() - 1*60*1000)).toISOString() // find all logs within 1 minute
+      // }
     }
   }
+  let start = new Date()
   logs.find(params).then(results => {
+    let elapsed = new Date() - start
     logger.info('Logs: ', results)
+    logger.info(`Elapsed: ${elapsed} ms`)
     process.exit()
   }).catch(err => {
     logger.error('logs.find:', err)

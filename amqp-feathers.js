@@ -86,8 +86,8 @@ async function amqpFeathers() {
   // console.log(localStorage.getItem('feathers-jwt'))
   // run login.js first to save jwt to localStorage
   var access_token = await supervisor.authenticate({
-    // strategy: 'jwt',
-    // accessToken: localStorage.getItem('feathers-jwt')
+    strategy: 'jwt',
+    accessToken: localStorage.getItem('feathers-jwt')
   }).catch(err => {
     logger.error('supervisor.authenticate:', err)
     process.exit()
@@ -126,8 +126,10 @@ async function amqpFeathers() {
   var ok = await channel.assertQueue(q_feathers)
   console.log('logger queue:', ok) // { queue: 'logger', messageCount: 0, consumerCount: 0 }
   var ok = await channel.bindQueue(q_feathers, ex_reads, '') // {}
+  var ok = await channel.prefetch(10)
   var ok = await channel.consume(q_feathers, function (msg) { // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
     if (msg !== null) {
+      logger.info(`Got message: ${msg.fields.deliveryTag}`)
       //console.log(msg.content.toString());
       // Traversal order of properties is fixed in ES6
       // http://exploringjs.com/es6/ch_oop-besides-classes.html#_traversal-order-of-properties
@@ -135,7 +137,7 @@ async function amqpFeathers() {
 
       logs.create(message, params).then(log => {
         // results adds a field: "_id": "DO5DyBX0lz4suuzi"
-        logger.info('logs.create: ', log)
+        logger.info(`logs.create: ${log.logTime} ${log._id}`)
         // acknowledge message sucessfully processed
         channel.ack(msg)
       }).catch(err => {
