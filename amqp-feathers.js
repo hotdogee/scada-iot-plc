@@ -70,8 +70,10 @@ localStorage.initSync();
 localStorage.setItem = localStorage.setItemSync
 localStorage.getItem = localStorage.getItemSync
 
+
+const ioConfig = config.get('supervisor')
 const supervisor = feathers()
-  .configure(socketio(io(argv.supervisor), { timeout: 10000 }))
+  .configure(socketio(io(ioConfig.url, ioConfig.options), { timeout: 10000 }))
   .configure(hooks())
   .configure(auth({
     storage: localStorage
@@ -98,7 +100,7 @@ async function amqpFeathers() {
   const logs = supervisor.service('logs')
   const params = {
     query: {
-      // $select: [ 'id' ] // return only the id field
+      // $select: [ 'id', 'logTime' ] // return only the id field
     }
   }
 
