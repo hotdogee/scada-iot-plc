@@ -98,7 +98,7 @@ async function amqpFeathers() {
   const logs = supervisor.service('logs')
   const params = {
     query: {
-      // $select: [ 'id' ] // return only the id field
+      // $select: [ 'id', 'logTime' ] // return only the id field
     }
   }
 

@@ -193,27 +193,27 @@ function get_plc_settings() {
           }
         ]
       },
-      {
-        name: '上貨櫃前',
-        type: 'nhr5200',
-        addr: 10,
-        fc03: [
-          {
-            addr: 0,
-            name: '壓力',
-            unit: 'bar',
-            min: 0,
-            max: 16
-          },
-          {
-            addr: 2,
-            name: '溫度',
-            unit: '℃',
-            min: -200,
-            max: 650
-          }
-        ]
-      },
+      // {
+      //   name: '上貨櫃前',
+      //   type: 'nhr5200',
+      //   addr: 10,
+      //   fc03: [
+      //     {
+      //       addr: 0,
+      //       name: '壓力',
+      //       unit: 'bar',
+      //       min: 0,
+      //       max: 16
+      //     },
+      //     {
+      //       addr: 2,
+      //       name: '溫度',
+      //       unit: '℃',
+      //       min: -200,
+      //       max: 650
+      //     }
+      //   ]
+      // },
       {
         name: '三桶前',
         type: 'nhr5200',
