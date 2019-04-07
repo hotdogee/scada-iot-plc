@@ -33,6 +33,6 @@ button.on('interrupt', (level) => {
   // console.log('buttonState', buttonState)
   if (buttonState === 0) return
   valveState = +!valveState
-  console.log('valveState', valveState)
+  console.log(new Date(), 'valveState', valveState)
   relay.digitalWrite(valveState)
 })
