@@ -24,7 +24,7 @@ relay.digitalWrite(valveState)
 const button = new Gpio(argv.button, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
-  edge: Gpio.RISING_EDGE
+  edge: Gpio.EITHER_EDGE
 })
 
 button.on('interrupt', (level) => {
