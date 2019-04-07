@@ -1,13 +1,12 @@
 // examples
-// node test/button-poll.js
-// node test/button-poll.js --pin 15 --wait 20
+// node test/led-button-pigpio.js
+// node test/led-button-pigpio.js --led 12 --button 15
 
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    'led': 12,
-    'button': 15,
-    'wait': 20
+    'led': 18,
+    'button': 22
   }
 })
 
