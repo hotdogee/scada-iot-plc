@@ -6,7 +6,8 @@
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
     'relay': 18,
-    'button': 22
+    'button': 22,
+    'wait': 500 // valve state changes can not happen more than one in 500ms
   }
 })
 
@@ -18,6 +19,7 @@ const Gpio = require('pigpio').Gpio
 // state
 let valveState = 0
 let buttonState = 0
+let valveLocked = false
 
 const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
 relay.digitalWrite(valveState)
@@ -31,8 +33,10 @@ button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
   // console.log('buttonState', buttonState)
-  if (buttonState === 0) return
+  if (buttonState === 0 || valveLocked) return
   valveState = +!valveState
+  valveLocked = true
+  setTimeout(() => valveLocked = false, argv.wait)
   console.log(new Date(), 'valveState', valveState)
   relay.digitalWrite(valveState)
 })
