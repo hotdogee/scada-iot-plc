@@ -20,6 +20,7 @@
     "minimist": "^1.2.0",
     "modbus-rtu": "^0.2.1",
     "node-persist": "^2.1.0",
+    "rpio": "^1.0.13",
     "serialport": "^7.0.2",
     "winston": "^2.4.4"
   }
