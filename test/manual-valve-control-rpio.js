@@ -30,8 +30,9 @@ const button = new Gpio(argv.button, {
 button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
+  console.log('buttonState', buttonState)
   if (buttonState === 0) return
   valveState = +!valveState
-  console.log(valveState)
+  console.log('valveState', valveState)
   relay.digitalWrite(valveState)
 })
