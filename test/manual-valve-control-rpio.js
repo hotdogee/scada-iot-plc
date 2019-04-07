@@ -16,19 +16,22 @@ const Gpio = require('pigpio').Gpio
 // released.
 
 // state
-let valveState = 1
+let valveState = 0
 let buttonState = 0
 
 const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
+relay.digitalWrite(valveState)
 const button = new Gpio(argv.button, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
-  edge: Gpio.EITHER_EDGE
+  edge: Gpio.RISING_EDGE
 })
 
 button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
-  console.log(buttonState)
-  relay.digitalWrite(buttonState)
+  if (buttonState === 0) return
+  valveState = +!valveState
+  console.log(valveState)
+  relay.digitalWrite(valveState)
 })
