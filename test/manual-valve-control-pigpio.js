@@ -1,6 +1,6 @@
 // examples
-// node test/led-button-pigpio.js
-// node test/led-button-pigpio.js --led 12 --button 15
+// sudo node test/manual-valve-control-pigpio.js
+// sudo node test/manual-valve-control-pigpio.js --wait 1000
 
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
@@ -23,6 +23,7 @@ let valveLocked = false
 
 const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
 relay.digitalWrite(valveState)
+
 const button = new Gpio(argv.button, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
