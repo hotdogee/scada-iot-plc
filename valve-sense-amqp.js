@@ -32,7 +32,7 @@ const print_vector3 = function(name, data) {
 const ex_commands = 'commands'
 const routingKey = 'plc1.shutoff_valve1'
 
-(async function () {
+;(async function () {
   try {
     // connect to ampq server, connection is a ChannelModel object
     // 'amqp://localhost'
