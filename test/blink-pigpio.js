@@ -1,7 +1,5 @@
 // examples
-// sudo node test/led-button-pigpio.js
-// sudo node test/led-button-pigpio.js --led 12 --button 15
-// node test/blink-pigpio.js --relay 29 --loop 2
+// sudo node test/blink-pigpio.js --relay 29 --loop 2
 // RELAY HAT
 // CH1 - GPIO26 - PIN37
 // CH2 - GPIO20 - PIN38
