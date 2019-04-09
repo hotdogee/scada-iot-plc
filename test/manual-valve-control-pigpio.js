@@ -45,7 +45,7 @@ const button = new Gpio(argv.button, {
 button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
-  console.log('buttonState', buttonState)
+  // console.log('buttonState', buttonState)
   if (buttonState === buttonNormalState || valveLocked) return
   valveState = +!valveState
   valveLocked = true
