@@ -70,7 +70,7 @@ const routingKey = 'plc1.shutoff_valve1'
       // console.log("Humidity is: ", data.humidity);
       if (data.humidity > 40) {
         console.log(util.format('%s %s %s %s', print_vector3('Accel', data.accel), data.temperature.toFixed(4), data.pressure.toFixed(4), data.humidity.toFixed(4)))
-        channel.publish(ex_commands, routingKey, new Buffer(JSON.stringify(msg)))
+        channel.publish(ex_commands, routingKey, Buffer.from(JSON.stringify(msg)))
       }
       setTimeout(function() { IMU.getValue(callb) }, 100)
     }
