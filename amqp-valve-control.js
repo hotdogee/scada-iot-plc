@@ -52,6 +52,6 @@ button.on('interrupt', (level) => {
   valveState = +!valveState
   valveLocked = true
   setTimeout(() => valveLocked = false, argv.wait)
-  logger.log(new Date(), 'valveState', valveState)
+  logger.info(new Date(), 'valveState', valveState)
   relay.digitalWrite(valveState)
 })
