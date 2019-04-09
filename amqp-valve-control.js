@@ -47,11 +47,11 @@ const button = new Gpio(argv.button, {
 button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
-  logger.debug('buttonState', buttonState)
+  logger.debug('buttonState = %d', buttonState)
   if (buttonState === buttonNormalState || valveLocked) return
   valveState = +!valveState
   valveLocked = true
   setTimeout(() => valveLocked = false, argv.wait)
-  logger.info(new Date(), 'valveState', valveState)
+  logger.info('valveState = %d', valveState)
   relay.digitalWrite(valveState)
 })
