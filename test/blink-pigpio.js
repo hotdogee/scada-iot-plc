@@ -31,6 +31,6 @@ const kernal = () => {
   console.log(valveState)
   relay.digitalWrite(valveState)
   i += 1
-  if (i <= argv.loop) setTimeout(kernal, 1000)
+  if (i < argv.loop) setTimeout(kernal, 1000)
 }
 setTimeout(kernal, 1000)
