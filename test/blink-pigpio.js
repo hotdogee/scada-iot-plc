@@ -1,6 +1,7 @@
 // examples
 // sudo node test/led-button-pigpio.js
 // sudo node test/led-button-pigpio.js --led 12 --button 15
+// node test/blink-pigpio.js --relay 29 --loop 2
 
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
