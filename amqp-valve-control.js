@@ -3,6 +3,7 @@
 // sudo node amqp-valve-control.js --wait 1000
 // sudo node amqp-valve-control.js --relay 18 --button 22 --wait 1000
 // sudo node amqp-valve-control.js --amqpUrl amqp://192.168.3.174
+// sudo node amqp-valve-control.js --amqpUrl amqp://hotdogee:r711$bebi-rabbitmq@192.168.3.174
 
 // RPi Relay Board
 // All the terminals are low active
@@ -84,7 +85,7 @@ const routingKey = '#.shutoff_valve1'
     const tag = await channel.consume(q.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
-        logger.info('message: %s', message)
+        logger.info('message: %s', JSON.stringify(message))
       }
     }, {noAck: true})
     logger.info('consume: %s', tag) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
