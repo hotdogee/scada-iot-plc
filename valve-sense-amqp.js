@@ -12,52 +12,25 @@
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    'relay': 26,
-    'relayActive': 'low',
-    'button': 24,
-    'buttonPull': 'up',
     'wait': 500, // valve state changes can not happen more than one in 500ms
     'amqpUrl': 'amqp://localhost'
   }
 })
 const logger = require('./lib/logger')
 const amqplib = require('amqplib')
-const Gpio = require('pigpio').Gpio
-// Turn the LED connected to GPIO17 on when the momentary push button
-// connected to GPIO4 is pressed. Turn the LED off when the button is
-// released.
+const util = require('util')
+const imu = require("../../nodeimu")
+const IMU = new imu.IMU()
 
-const buttonNormalState = argv.buttonPull === 'up' ? 1 : 0
-const relayNormalState = argv.relayActive === 'low' ? 1 : 0
-const relayActiveState = +!relayNormalState
-// state
-let valveState = relayNormalState
-let buttonState = buttonNormalState
-let valveLocked = false
-
-const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
-relay.digitalWrite(valveState)
-
-const button = new Gpio(argv.button, {
-  mode: Gpio.INPUT,
-  pullUpDown: argv.buttonPull === 'up' ? Gpio.PUD_UP : Gpio.PUD_DOWN,
-  edge: Gpio.EITHER_EDGE
-})
-
-button.on('interrupt', (level) => {
-  if (level === buttonState) return
-  buttonState = level
-  logger.debug('buttonState = %d', buttonState)
-  if (buttonState === buttonNormalState || valveLocked) return
-  valveState = +!valveState
-  valveLocked = true
-  setTimeout(() => valveLocked = false, argv.wait)
-  logger.info('valveState = %d', valveState)
-  relay.digitalWrite(valveState)
-})
+const print_vector3 = function(name, data) {
+  const sx = data.x >= 0 ? ' ' : '';
+  const sy = data.y >= 0 ? ' ' : '';
+  const sz = data.z >= 0 ? ' ' : '';
+  return util.format('%s: %s%s %s%s %s%s ', name, sx, data.x.toFixed(4), sy, data.y.toFixed(4), sz, data.z.toFixed(4));
+}
 
 const ex_commands = 'commands'
-const routingKey = '#.shutoff_valve1'
+const routingKey = 'plc1.shutoff_valve1'
 
 (async function () {
   try {
@@ -77,15 +50,31 @@ const routingKey = '#.shutoff_valve1'
     logger.info('Channel created')
     const ex = await channel.assertExchange(ex_commands, 'topic', {durable: false})
     logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
-    const q = await channel.assertQueue('', {exclusive: true})
-    logger.info('assertQueue: %s', q) // { queue: 'logger', messageCount: 0, consumerCount: 0 }
-    await channel.bindQueue(q.queue, ex_commands, routingKey) // {}
-    const tag = await channel.consume(q.queue, async function (msg) {
-      if (msg !== null) {
-        logger.info('msg: %s', msg)
+    const msg = {
+      shutoff_valve1: {
+        state: 0
       }
-    }, {noAck: true})
-    logger.info('consume: %s', tag) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
+    }
+    const callb = (err, data) => {
+      if (err !== null) {
+        console.error("Could not read sensor data: ", err)
+        return;
+      }
+      // console.log("Accelleration is: ", JSON.stringify(data.accel, null, "  "));
+      // console.log("Gyroscope is: ", JSON.stringify(data.gyro, null, "  "));
+      // console.log("Compass is: ", JSON.stringify(data.compass, null, "  "));
+      // console.log("Fusion data is: ", JSON.stringify(data.fusionPose, null, "  "));
+
+      // console.log("Temp is: ", data.temperature);
+      // console.log("Pressure is: ", data.pressure);
+      // console.log("Humidity is: ", data.humidity);
+      if (data.humidity > 40) {
+        console.log(util.format('%s %s %s %s', print_vector3('Accel', data.accel), data.temperature.toFixed(4), data.pressure.toFixed(4), data.humidity.toFixed(4)))
+        channel.publish(ex_commands, routingKey, new Buffer(msg))
+      }
+      setTimeout(function() { IMU.getValue(callb) }, 100)
+    }
+    IMU.getValue(callb)
   } catch (error) {
     logger.error(e)
     process.exit()

@@ -15,10 +15,10 @@ const util = require('util')
 const imu = require("../../nodeimu")
 const IMU = new imu.IMU()
 
-var print_vector3 = function(name, data) {
-  var sx = data.x >= 0 ? ' ' : '';
-  var sy = data.y >= 0 ? ' ' : '';
-  var sz = data.z >= 0 ? ' ' : '';
+const print_vector3 = function(name, data) {
+  const sx = data.x >= 0 ? ' ' : '';
+  const sy = data.y >= 0 ? ' ' : '';
+  const sz = data.z >= 0 ? ' ' : '';
   return util.format('%s: %s%s %s%s %s%s ', name, sx, data.x.toFixed(4), sy, data.y.toFixed(4), sz, data.z.toFixed(4));
 }
 
