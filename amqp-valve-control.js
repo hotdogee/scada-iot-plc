@@ -87,7 +87,11 @@ const routingKey = '#.shutoff_valve1'
         const message = JSON.parse(msg.content.toString())
         if (message && message.shutoff_valve1 && message.shutoff_valve1.state === 0) {
           if (valveState !== relayNormalState) {
-            relay.digitalWrite(relayNormalState)
+            valveState = relayNormalState
+            valveLocked = true
+            setTimeout(() => valveLocked = false, argv.wait)
+            logger.info('valveState = %d', valveState)
+            relay.digitalWrite(valveState)
           }
         }
         logger.info('message: %s', JSON.stringify(message))
