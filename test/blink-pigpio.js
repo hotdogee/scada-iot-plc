@@ -20,11 +20,6 @@ let valveState = 0
 const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
 relay.digitalWrite(valveState)
 
-button.on('interrupt', (level) => {
-  console.log(level)
-  led.digitalWrite(level)
-})
-
 let i = 0
 const handle = setInterval(() => {
   // On for 1 second
