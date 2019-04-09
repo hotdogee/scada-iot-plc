@@ -25,11 +25,12 @@ const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
 relay.digitalWrite(valveState)
 
 let i = 0
-const handle = setInterval(() => {
+const kernal = () => {
   // On for 1 second
   valveState = +!valveState
   console.log(valveState)
   relay.digitalWrite(valveState)
   i += 1
-  if (i >= argv.loop) clearInterval(handle)
-}, 1000)
+  if (i <= argv.loop) setTimeout(kernal, 1000)
+}
+setTimeout(kernal, 1000)
