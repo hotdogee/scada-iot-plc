@@ -85,6 +85,11 @@ const routingKey = '#.shutoff_valve1'
     const tag = await channel.consume(q.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
+        if (message && message.shutoff_valve1 && message.shutoff_valve1.state === 0) {
+          if (valveState !== relayNormalState) {
+            relay.digitalWrite(relayNormalState)
+          }
+        }
         logger.info('message: %s', JSON.stringify(message))
       }
     }, {noAck: true})
