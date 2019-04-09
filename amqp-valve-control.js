@@ -1,7 +1,8 @@
 // examples
-// sudo node test/manual-valve-control-pigpio.js
-// sudo node test/manual-valve-control-pigpio.js --wait 1000
-// sudo node test/manual-valve-control-pigpio.js --relay 18 --button 22 --wait 1000
+// sudo node amqp-valve-control.js
+// sudo node amqp-valve-control.js --wait 1000
+// sudo node amqp-valve-control.js --relay 18 --button 22 --wait 1000
+// sudo node amqp-valve-control.js --amqpUrl amqp://192.168.3.174
 
 // RPi Relay Board
 // All the terminals are low active
@@ -59,7 +60,7 @@ button.on('interrupt', (level) => {
 const ex_commands = 'commands'
 const routingKey = '#.shutoff_valve1'
 
-(async function () {
+;(async function () {
   try {
     // connect to ampq server, connection is a ChannelModel object
     // 'amqp://localhost'
