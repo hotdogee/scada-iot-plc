@@ -16,10 +16,12 @@ const argv = require('minimist')(process.argv.slice(2), {
     'relayActive': 'low',
     'button': 24,
     'buttonPull': 'up',
-    'wait': 500 // valve state changes can not happen more than one in 500ms
+    'wait': 500, // valve state changes can not happen more than one in 500ms
+    'ampqstr': 'amqp://localhost'
   }
 })
-
+const logger = require('./lib/logger')
+const amqplib = require('amqplib')
 const Gpio = require('pigpio').Gpio
 // Turn the LED connected to GPIO17 on when the momentary push button
 // connected to GPIO4 is pressed. Turn the LED off when the button is
@@ -45,11 +47,11 @@ const button = new Gpio(argv.button, {
 button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
-  // console.log('buttonState', buttonState)
+  logger.debug('buttonState', buttonState)
   if (buttonState === buttonNormalState || valveLocked) return
   valveState = +!valveState
   valveLocked = true
   setTimeout(() => valveLocked = false, argv.wait)
-  console.log(new Date(), 'valveState', valveState)
+  logger.log(new Date(), 'valveState', valveState)
   relay.digitalWrite(valveState)
 })

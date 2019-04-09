@@ -130,7 +130,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # Others
-lib/
 data/
 
 # local storage
