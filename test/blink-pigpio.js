@@ -2,12 +2,16 @@
 // sudo node test/led-button-pigpio.js
 // sudo node test/led-button-pigpio.js --led 12 --button 15
 // node test/blink-pigpio.js --relay 29 --loop 2
+// RELAY HAT
+// CH1 - GPIO26 - PIN37
+// CH2 - GPIO20 - PIN38
+// CH3 - GPIO21 - PIN40
 
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    'relay': 18,
-    'loop': 20
+    'relay': 26,
+    'loop': 2
   }
 })
 
@@ -28,4 +32,4 @@ const handle = setInterval(() => {
   relay.digitalWrite(valveState)
   i += 1
   if (i >= argv.loop) clearInterval(handle)
-}, 1000);
+}, 1000)
