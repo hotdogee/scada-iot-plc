@@ -83,7 +83,8 @@ const routingKey = '#.shutoff_valve1'
     await channel.bindQueue(q.queue, ex_commands, routingKey) // {}
     const tag = await channel.consume(q.queue, async function (msg) {
       if (msg !== null) {
-        logger.info('msg: %s', msg)
+        const message = JSON.parse(msg.content.toString())
+        logger.info('message: %s', message)
       }
     }, {noAck: true})
     logger.info('consume: %s', tag) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
