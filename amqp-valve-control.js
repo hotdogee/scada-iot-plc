@@ -22,9 +22,10 @@ const Gpio = require('pigpio').Gpio
 // connected to GPIO4 is pressed. Turn the LED off when the button is
 // released.
 
+const buttonStateDefault = argv.buttonPull === 'up' ? 1 : 0
 // state
 let valveState = 0
-let buttonState = 0
+let buttonState = buttonStateDefault
 let valveLocked = false
 
 const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
@@ -39,8 +40,8 @@ const button = new Gpio(argv.button, {
 button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
-  // console.log('buttonState', buttonState)
-  if (buttonState === 0 || valveLocked) return
+  console.log('buttonState', buttonState)
+  if (buttonState === buttonStateDefault || valveLocked) return
   valveState = +!valveState
   valveLocked = true
   setTimeout(() => valveLocked = false, argv.wait)
