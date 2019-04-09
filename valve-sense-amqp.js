@@ -19,7 +19,7 @@ const argv = require('minimist')(process.argv.slice(2), {
 const logger = require('./lib/logger')
 const amqplib = require('amqplib')
 const util = require('util')
-const imu = require("../../nodeimu")
+const imu = require("../nodeimu")
 const IMU = new imu.IMU()
 
 const print_vector3 = function(name, data) {
