@@ -1,12 +1,17 @@
 // examples
 // sudo node test/manual-valve-control-pigpio.js
 // sudo node test/manual-valve-control-pigpio.js --wait 1000
+// RELAY HAT
+// CH1 - GPIO26 - PIN37
+// CH2 - GPIO20 - PIN38
+// CH3 - GPIO21 - PIN40
 
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    'relay': 18,
-    'button': 22,
+    'relay': 26,
+    'button': 24,
+    'button-pull': 'up',
     'wait': 500 // valve state changes can not happen more than one in 500ms
   }
 })
@@ -26,7 +31,7 @@ relay.digitalWrite(valveState)
 
 const button = new Gpio(argv.button, {
   mode: Gpio.INPUT,
-  pullUpDown: Gpio.PUD_DOWN,
+  pullUpDown: argv.button-pull === 'up' ? Gpio.PUD_UP : Gpio.PUD_DOWN,
   edge: Gpio.EITHER_EDGE
 })
 
