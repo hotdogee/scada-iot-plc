@@ -2,7 +2,9 @@
 // sudo node test/manual-valve-control-pigpio.js
 // sudo node test/manual-valve-control-pigpio.js --wait 1000
 // sudo node test/manual-valve-control-pigpio.js --relay 18 --button 22 --wait 1000
-// RELAY HAT
+
+// RPi Relay Board
+// All the terminals are low active
 // CH1 - GPIO26 - PIN37
 // CH2 - GPIO20 - PIN38
 // CH3 - GPIO21 - PIN40
@@ -11,6 +13,7 @@
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
     'relay': 26,
+    'relayActive': 'low',
     'button': 24,
     'buttonPull': 'up',
     'wait': 500 // valve state changes can not happen more than one in 500ms
@@ -22,10 +25,12 @@ const Gpio = require('pigpio').Gpio
 // connected to GPIO4 is pressed. Turn the LED off when the button is
 // released.
 
-const buttonStateDefault = argv.buttonPull === 'up' ? 1 : 0
+const buttonNormalState = argv.buttonPull === 'up' ? 1 : 0
+const relayNormalState = argv.relayActive === 'low' ? 1 : 0
+const relayActiveState = +!relayNormalState
 // state
-let valveState = 0
-let buttonState = buttonStateDefault
+let valveState = relayNormalState
+let buttonState = buttonNormalState
 let valveLocked = false
 
 const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
@@ -41,7 +46,7 @@ button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
   console.log('buttonState', buttonState)
-  if (buttonState === buttonStateDefault || valveLocked) return
+  if (buttonState === buttonNormalState || valveLocked) return
   valveState = +!valveState
   valveLocked = true
   setTimeout(() => valveLocked = false, argv.wait)
