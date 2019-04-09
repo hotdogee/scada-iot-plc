@@ -10,7 +10,7 @@ const argv = require('minimist')(process.argv.slice(2), {
   }
 })
 
-const imu = require("node-sense-hat").Imu;
+const imu = require("../../nodeimu");
 
 const IMU = new imu.IMU();
 
