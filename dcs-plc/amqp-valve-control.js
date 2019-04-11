@@ -22,7 +22,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     'amqpUrl': 'amqp://localhost'
   }
 })
-const logger = require('./lib/logger')
+const logger = require('../lib/logger')
 const amqplib = require('amqplib')
 const Gpio = require('pigpio').Gpio
 // Turn the LED connected to GPIO17 on when the momentary push button
