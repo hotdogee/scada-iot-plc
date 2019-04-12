@@ -18,7 +18,7 @@
     "lodash": "^4.17.11",
     "machine-uuid": "^1.2.0",
     "minimist": "^1.2.0",
-    "modbus-rtu": "^0.2.1",
+    "modbus-rtu": "git+https://github.com/hotdogee/node-modbus-rtu.git",
     "node-persist": "^3.0.4",
     "pigpio": "^1.2.2",
     "rpio": "^1.0.13",
