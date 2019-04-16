@@ -30,7 +30,7 @@ logger.info(`User ${email}, Password ${password}`)
   try {
     // const Storage = require('dom-storage')
     // var localStorage = new Storage('./localStorage.json')
-    const localStorage = createLocalStorage({ mode : "node", storeFilePath: "./localstorage" })
+    // const localStorage = createLocalStorage({ mode : "node", storeFilePath: "./localstorage" })
     // await localStorage.init()
     
     const ioConfig = config.get('supervisor')
@@ -40,9 +40,9 @@ logger.info(`User ${email}, Password ${password}`)
     const supervisor = feathers()
       .configure(socketio(socket))
       .configure(hooks())
-      .configure(auth({
-        storage: localStorage
-      }))
+      // .configure(auth({
+      //   storage: localStorage
+      // }))
     
     const token = await supervisor.authenticate({
       strategy: 'local',
