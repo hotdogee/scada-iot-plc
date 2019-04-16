@@ -50,10 +50,12 @@ logger.info(`User ${email}, Password ${password}`)
       email,
       password
     })
-    const token = await supervisor.authenticate({
+    supervisor.authenticate({
       strategy: 'local',
       email,
       password
+    }).then(token => {
+      logger.info(`token: ${token}`)
     })
     logger.info('User is logged in:', token)
   } catch (error) {
