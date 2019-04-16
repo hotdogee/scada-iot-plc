@@ -1,3 +1,4 @@
+// node reads-plc/amqp-csv.js
 const config = require('config')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
