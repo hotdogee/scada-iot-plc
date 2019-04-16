@@ -40,7 +40,7 @@ const supervisor = feathers()
   // .configure(hooks())
   .configure(
     auth({
-      storage: localStorage
+      // storage: localStorage
     })
   )
 logger.info(`authenticate`, {
