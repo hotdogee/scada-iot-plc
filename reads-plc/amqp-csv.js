@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const _ = require('lodash');
-const json2csv = require('json2csv');
+const { parse } = require('json2csv');
 const amqplib = require('amqplib');
 const filesizeParser = require('filesize-parser');
 const { createLogger, format, transports } = require('winston')
@@ -168,7 +168,7 @@ async function amqpCsv() {
       // Traversal order of properties is fixed in ES6
       // http://exploringjs.com/es6/ch_oop-besides-classes.html#_traversal-order-of-properties
       const message = JSON.parse(msg.content.toString())
-      const [header, row] = json2csv({ data: flattenMessage(message) }).split(os.EOL)
+      const [header, row] = parse({ data: flattenMessage(message) }).split(os.EOL)
       // console.log('2.5', file_h, file_path, file_header)
       // check file size
       let file_full = false
