@@ -33,16 +33,16 @@ localStorage.getItem = localStorage.getItemSync
 
 const ioConfig = config.get('supervisor')
 logger.info(`Connecting to feathers server: `, ioConfig)
-const socket = io(ioConfig.url, ioConfig.options)
+// const socket = io(ioConfig.url, ioConfig.options)
+const socket = io("https://scada.hanl.in", {
+  path: "/api/socket.io" // default: /socket.io
+})
 
-const supervisor = feathers()
-  .configure(socketio(socket))
-  // .configure(hooks())
-  .configure(
-    auth({
-      // storage: localStorage
-    })
-  )
+const supervisor = feathers().configure(socketio(socket)).configure(
+  auth({
+    // storage: localStorage
+  })
+)
 logger.info(`authenticate`, {
   strategy: 'local',
   email,

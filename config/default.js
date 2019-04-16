@@ -4,6 +4,7 @@ module.exports = {
     // "url": "http://api.scada.hanl.in"
     url: "https://scada.hanl.in",
     options: {
+      forceNew: true,
       path: "/api/socket.io" // default: /socket.io
     }
   },
