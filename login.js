@@ -6,7 +6,8 @@ const hooks = require('feathers-hooks')
 const auth = require('feathers-authentication-client')
 const io = require('socket.io-client')
 const config = require('config')
-const localStorage = require('node-persist')
+// const localStorage = require('node-persist')
+const { createLocalStorage } = require('localstorage-ponyfill')
 const { createLogger, format, transports } = require('winston')
 const logger = createLogger({
   level: 'debug',
@@ -29,7 +30,8 @@ logger.info(`User ${email}, Password ${password}`)
   try {
     // const Storage = require('dom-storage')
     // var localStorage = new Storage('./localStorage.json')
-    await localStorage.init()
+    const localStorage = createLocalStorage({ mode : "node", storeFilePath: "./localstorage" })
+    // await localStorage.init()
     
     const ioConfig = config.get('supervisor')
     logger.info(`Connecting to feathers server: `, ioConfig)
