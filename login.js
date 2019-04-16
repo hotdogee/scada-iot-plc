@@ -25,7 +25,7 @@ const email = process.env.USERNAME || 'user@example.com'
 const password = process.env.PASSWORD || 'random!password'
 logger.info(`User ${email}, Password ${password}`)
 
-;(async function (supervisor) {
+;(async function () {
   try {
     // const Storage = require('dom-storage')
     // var localStorage = new Storage('./localStorage.json')
@@ -55,4 +55,4 @@ logger.info(`User ${email}, Password ${password}`)
   } finally {
     process.exit()
   }
-})(supervisor)
+})()
