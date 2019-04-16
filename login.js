@@ -40,7 +40,7 @@ const socket = io("https://scada.hanl.in", {
 
 const supervisor = feathers().configure(socketio(socket)).configure(
   auth({
-    // storage: localStorage
+    storage: localStorage
   })
 )
 logger.info(`authenticate`, {
