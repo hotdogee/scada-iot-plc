@@ -55,9 +55,8 @@ logger.info(`User ${email}, Password ${password}`)
       email,
       password
     }).then(token => {
-      logger.info(`token: ${token}`)
+      logger.info('User is logged in:', token)
     })
-    logger.info('User is logged in:', token)
   } catch (error) {
     logger.error('Error occurred:', error)
   } finally {
