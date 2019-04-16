@@ -22,7 +22,7 @@ const logger = createLogger({
 // const Storage = require('dom-storage')
 // var localStorage = new Storage('./localStorage.json')
 const localStorage = require('node-persist')
-localStorage.initSync()
+await localStorage.init()
 localStorage.setItem = localStorage.setItemSync
 localStorage.getItem = localStorage.getItemSync
 
