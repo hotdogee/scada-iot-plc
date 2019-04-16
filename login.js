@@ -21,30 +21,30 @@ const logger = createLogger({
 })
 // const Storage = require('dom-storage')
 // var localStorage = new Storage('./localStorage.json')
-const localStorage = require('node-persist')
-localStorage.initSync()
-localStorage.setItem = localStorage.setItemSync
-localStorage.getItem = localStorage.getItemSync
-
-const ioConfig = config.get('supervisor')
-logger.info(`Connecting to feathers server: `, ioConfig)
-const socket = io(ioConfig.url, ioConfig.options)
-
-const supervisor = feathers()
-  .configure(socketio(socket))
-  // .configure(hooks())
-  .configure(
-    auth({
-      storage: localStorage
-    })
-  )
 
 const email = process.env.USERNAME || 'user@example.com'
 const password = process.env.PASSWORD || 'random!password'
 logger.info(`User ${email}, Password ${password}`)
 
-;(async function (supervisor) {
+;(async function () {
   try {
+    const localStorage = require('node-persist')
+    localStorage.initSync()
+    localStorage.setItem = localStorage.setItemSync
+    localStorage.getItem = localStorage.getItemSync
+    
+    const ioConfig = config.get('supervisor')
+    logger.info(`Connecting to feathers server: `, ioConfig)
+    const socket = io(ioConfig.url, ioConfig.options)
+    
+    const supervisor = feathers()
+      .configure(socketio(socket))
+      // .configure(hooks())
+      .configure(
+        auth({
+          storage: localStorage
+        })
+      )
     const token = await supervisor.authenticate({
       strategy: 'local',
       email,
@@ -56,4 +56,4 @@ logger.info(`User ${email}, Password ${password}`)
   } finally {
     process.exit()
   }
-})(supervisor)
+})()
