@@ -72,8 +72,12 @@ localStorage.getItem = localStorage.getItemSync
 
 
 const ioConfig = config.get('supervisor')
+const socket = io("https://scada.hanl.in", {
+  path: "/api/socket.io" // default: /socket.io
+})
+
 const supervisor = feathers()
-  .configure(socketio(io(ioConfig.url, ioConfig.options), { timeout: 10000 }))
+  .configure(socketio(socket, { timeout: 10000 }))
   .configure(hooks())
   .configure(auth({
     storage: localStorage
