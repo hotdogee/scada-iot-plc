@@ -40,28 +40,19 @@ const hooks = require('feathers-hooks')
 const errors = require('feathers-errors') // An object with all of the custom error types.
 const auth = require('feathers-authentication-client')
 const io = require('socket.io-client')
-const winston = require('winston')
-var logger = new (winston.Logger)({
-    transports: [
-      new (winston.transports.Console)({
-        // setup console logging with timestamps
-        level: 'debug',
-        timestamp: function() {
-          return (new Date()).toISOString();
-        },
-        formatter: function(options) {
-          return options.timestamp() + ' ' + options.level[0].toUpperCase() + ' ' + (options.message ? options.message : '') +
-            (options.meta && Object.keys(options.meta).length ? JSON.stringify(options.meta, null, 2) : '' );
-        }
-      }),
-      new winston.transports.File({
-        filename: 'error.log',
-        level: 'error',
-        maxsize: 4 * 1024 * 1024,
-        maxFiles: 10,
-      }),
-    ]
-});
+const { createLogger, format, transports } = require('winston')
+const logger = createLogger({
+  level: 'debug',
+  format: format.combine(
+    format.splat(),
+    format.timestamp(),
+    format.ms(),
+    format.simple()
+  ),
+  transports: [
+    new transports.Console()
+  ]
+})
 const util = require('util');
 const amqplib = require('amqplib');
 const localStorage = require('node-persist')
