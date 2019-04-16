@@ -168,7 +168,7 @@ async function amqpCsv() {
       // Traversal order of properties is fixed in ES6
       // http://exploringjs.com/es6/ch_oop-besides-classes.html#_traversal-order-of-properties
       const message = JSON.parse(msg.content.toString())
-      const [header, row] = parse({ data: flattenMessage(message) }).split(os.EOL)
+      const [header, row] = parse(flattenMessage(message)).split(os.EOL)
       // console.log('2.5', file_h, file_path, file_header)
       // check file size
       let file_full = false
