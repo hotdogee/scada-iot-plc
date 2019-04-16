@@ -26,40 +26,32 @@ const email = process.env.USERNAME || 'user@example.com'
 const password = process.env.PASSWORD || 'random!password'
 logger.info(`User ${email}, Password ${password}`)
 
-;(async function () {
-  try {
-    const localStorage = require('node-persist')
-    localStorage.initSync()
-    localStorage.setItem = localStorage.setItemSync
-    localStorage.getItem = localStorage.getItemSync
-    
-    const ioConfig = config.get('supervisor')
-    logger.info(`Connecting to feathers server: `, ioConfig)
-    const socket = io(ioConfig.url, ioConfig.options)
-    
-    const supervisor = feathers()
-      .configure(socketio(socket))
-      // .configure(hooks())
-      .configure(
-        auth({
-          storage: localStorage
-        })
-      )
-    logger.info(`authenticate`, {
-      strategy: 'local',
-      email,
-      password
+const localStorage = require('node-persist')
+localStorage.initSync()
+localStorage.setItem = localStorage.setItemSync
+localStorage.getItem = localStorage.getItemSync
+
+const ioConfig = config.get('supervisor')
+logger.info(`Connecting to feathers server: `, ioConfig)
+const socket = io(ioConfig.url, ioConfig.options)
+
+const supervisor = feathers()
+  .configure(socketio(socket))
+  // .configure(hooks())
+  .configure(
+    auth({
+      storage: localStorage
     })
-    supervisor.authenticate({
-      strategy: 'local',
-      email,
-      password
-    }).then(token => {
-      logger.info('User is logged in:', token)
-    })
-  } catch (error) {
-    logger.error('Error occurred:', error)
-  } finally {
-    process.exit()
-  }
-})()
+  )
+logger.info(`authenticate`, {
+  strategy: 'local',
+  email,
+  password
+})
+supervisor.authenticate({
+  strategy: 'local',
+  email,
+  password
+}).then(token => {
+  logger.info('User is logged in:', token)
+})
