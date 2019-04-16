@@ -54,4 +54,5 @@ supervisor.authenticate({
   password
 }).then(token => {
   logger.info('User is logged in:', token)
+  process.exit()
 })
