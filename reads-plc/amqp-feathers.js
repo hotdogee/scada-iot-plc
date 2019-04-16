@@ -84,7 +84,7 @@ supervisor.on('reauthentication-error', err => {
   process.exit()
 })
 
-async function amqpFeathers() {
+;(async function amqpFeathers() {
   // console.log(localStorage.getItem('feathers-jwt'))
   // run login.js first to save jwt to localStorage
   var access_token = await supervisor.authenticate({
@@ -151,109 +151,4 @@ async function amqpFeathers() {
       })
     }
   })
-}
-
-amqpFeathers()
-
-// var [kuzzle_ip, kuzzle_port] = argv.supervisor.split(':');
-// kuzzle_port = kuzzle_port ? +kuzzle_port : 7512;
-// console.log(kuzzle_ip, kuzzle_port);
-
-// // connect to ampq server
-// var ampq = amqplib.connect(argv.ampqstr);
-// // var ampq = amqplib.connect('amqp://localhost');
-
-// // connect to the Kuzzle server
-// var kuzzle = new Kuzzle(kuzzle_ip, {
-//     defaultIndex: 'test',
-//     port: kuzzle_port
-// }, function (err, res) {
-//     if (err)
-//         console.error(err.message);
-//     else
-//         console.log(util.format('Connected: %s:%d - %s', kuzzle.host, kuzzle.port, kuzzle.defaultIndex));
-// });
-
-
-// // get a reference to the a collection
-// var collection = kuzzle.collection('reads');
-// var channel = null;
-// var consumerTag = null;
-
-
-// function login() {
-//     var expiresIn = '1h';
-//     return kuzzle.loginPromise('local', { username: 'geo9', password: 'r711ntur711' }, expiresIn);
-// }
-
-
-// kuzzle.addListener('connected', async function () {
-//     try {
-//         var response = await login();
-//         console.log('Got JWT Token:', response.jwt);
-//         var user = await kuzzle.whoAmIPromise();
-//         console.log('User:', user.id, user.content.firstname, user.content.lastname);
-//         console.log('Profiles:', user.content.profileIds);
-//     } catch (error) {
-//         console.error('connected', error);
-//     }
-// });
-
-
-// kuzzle.addListener('jwtTokenExpired', async function (request, cb) {
-//     try {
-//         var result = await channel.cancel(consumerTag);
-//         console.log('jwtTokenExpired during request:', request);
-//         var response = await login();
-//         console.log('Got JWT Token:', response.jwt);
-//         var user = await kuzzle.whoAmIPromise();
-//         console.log('User:', user.id, user.content.firstname, user.content.lastname);
-//         console.log('Profiles:', user.content.profileIds);
-//     } catch (error) {
-//         console.error('jwtTokenExpired', error);
-//     }
-// });
-
-
-// async function kuzzle_client() {
-//     // assert ampq reads exchange and bind to logger queue
-//     var ex_reads = 'reads';
-//     var q_logger = 'logger';
-//     channel = await ampq.then(function (conn) {
-//         // conn is a ChannelModel object
-//         return conn.createChannel();
-//     }).then(async function (ch) {
-//         // ch is a Channel object
-//         var ok = await ch.assertExchange(ex_reads, 'fanout');
-//         console.log('reads exchange:', ok); // { exchange: 'reads' }
-//         var ok = await ch.assertQueue(q_logger);
-//         console.log('logger queue:', ok); // { queue: 'logger', messageCount: 0, consumerCount: 0 }
-//         var ok = await ch.bindQueue(q_logger, ex_reads, ''); // {}
-//         var ok = await ch.consume(q_logger, function (msg) { // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
-//             if (msg !== null) {
-//                 console.log(msg.content.toString());
-//                 // persist the document into the collection
-//                 collection.createDocumentPromise(JSON.parse(msg.content.toString())).then(document => {
-//                     console.log('Created document', document.content);
-//                 }).catch(error => {
-//                     console.error('Created document', error);
-//                 });
-//                 ch.ack(msg);
-//             }
-//         });
-//         consumerTag = ok.consumerTag;
-//         return ch;
-//     }).catch(console.warn);
-// }
-
-// kuzzle.addListener('loginAttempt', async function (result) {
-//     try {
-//         if (result.success) {
-//             kuzzle_client();
-//         } else {
-//             console.error('loginAttempt', result.error);
-//         }
-//     } catch (error) {
-//         console.error('loginAttempt', error);
-//     }
-// });
+})()

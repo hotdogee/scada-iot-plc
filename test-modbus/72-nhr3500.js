@@ -3,115 +3,275 @@ const SerialPort = require('serialport')
 const modbus = require('modbus-rtu')
 const config = require('config')
 require('console-stamp')(console, '[HH:MM:ss.l]')
-
-// list available serial ports
-SerialPort.list(function (err, ports) {
-  if (err) {
-    console.error(err)
-    return
+// parse arguments
+const argv = require('minimist')(process.argv.slice(2), {
+  default: {
+    'serial': 'auto',
+    'addr': 72
   }
-
-  ports.forEach(function (port) {
-    console.log(port.comName)
-  })
 })
 
-var port = '/dev/ttyUSB0'
-if (/^win/.test(process.platform))
-  port = 'COM3'
+function get_serial() {
+  return new Promise((resolve, reject) => {
+    // list available serial ports
+    SerialPort.list((err, ports) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      if (ports.length == 0) {
+        reject(Error('No serial ports found.'));
+      } else if (argv.serial == 'auto') {
+        if (ports.length == 1) {
+          resolve(ports[0].comName);
+        } else {
+          reject(Error('Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' + ports.map(port => port.comName).join(', ')));
+        }
+      } else if (ports.map(port => port.comName).indexOf(argv.serial) != -1) {
+        resolve(argv.serial);
+      } else {
+        reject(Error('Serial port "' + argv.serial + '" not found.'));
+      }
+    });
+  });
+}
+
+// auto detect or try to use specified serial port
+try {
+  const serial = await get_serial();
+  console.log('Serial port:', serial);
+} catch (e) {
+  console.error('Error:', e.message);
+  // return;
+  process.exit()
+}
+
+// NHR3500
+const addr = argv.addr
 
 //create ModbusMaster instance and pass the serial port object
 var master = new modbus.ModbusMaster(new SerialPort(port, {
-   baudrate: 9600
+  baudrate: 19200, // 19200-8-N-1
+  dataBits: 8,
+  parity: 'none',
+  stopBits: 1
 }), {
-   endPacketTimeout: 19,
-   queueTimeout: 50,
-   responseTimeout: 500
-});
+    endPacketTimeout: 19,
+    queueTimeout: 50,
+    responseTimeout: 500
+  });
 
 function parse_fractions(buffer) {
-    return buffer.readUInt16BE() + buffer.readUInt16BE(2) / 65536
+  return buffer.readUInt16BE() + buffer.readUInt16BE(2) / 65536
 }
 
 function parse_uint16(buffer) {
-    return buffer.readUInt16BE()
+  return buffer.readUInt16BE()
 }
 
 function parse_float2(buffer) {
-    buffer.swap16();
-    return [buffer.readFloatLE(), buffer.readFloatLE(4)]
+  buffer.swap16();
+  return [buffer.readFloatLE(), buffer.readFloatLE(4)]
 }
 
 function parse_uint32_4(buffer) {
-    //buffer.swap16();
-    return [buffer.readUInt32BE(), buffer.readUInt32BE(4), buffer.readUInt32BE(8), buffer.readUInt32BE(12)]
+  //buffer.swap16();
+  return [buffer.readUInt32BE(), buffer.readUInt32BE(4), buffer.readUInt32BE(8), buffer.readUInt32BE(12)]
 }
 
-function read() {
-    var result = {};
-    master.readHoldingRegisters(2, 182, 2, parse_fractions).then(function(data){
-        console.log(data);
-    })
-    master.readHoldingRegisters(2, 185, 2, parse_fractions).then(function(data){
-        console.log(data);
-    })
-    master.readHoldingRegisters(2, 188, 2, parse_fractions).then(function(data){
-        console.log(data);
-    })
-    master.readHoldingRegisters(2, 198, 2, parse_fractions).then(function(data){
-        console.log(data);
-    })
-    master.readHoldingRegisters(1, 0, 4, parse_float2).then(function(data){
-        console.log(data);
-    })
-}
-// read the values of 10 registers starting at address 0
-// on device number 1. and log the values to the console.
-//setInterval(read, 100);
-
-
-async function async_read() {
-    var result = []
-    var data = await master.readHoldingRegisters(2, 182, 2, parse_fractions).catch(console.error)
-    //console.log(data)
-    result.push(data)
-    var data = await master.readHoldingRegisters(2, 185, 2, parse_fractions).catch(console.error)
-    //console.log(data)
-    result.push(data)
-    var data = await master.readHoldingRegisters(2, 188, 2, parse_fractions).catch(console.error)
-    //console.log(data)
-    result.push(data)
-    var data = await master.readHoldingRegisters(2, 198, 2, parse_fractions).catch(console.error)
-    //console.log(data)
-    result.push(data)
-    var data = await master.readHoldingRegisters(1, 0, 4, parse_float2).catch(console.error)
-    //console.log(data)
-    result.push(data)
-    console.log(result)
-    async_read()
-}
-//async_read()
-
-function parse_none(buffer) {
-    return buffer
+function sniff16(buffer) {
+  return [buffer.toString('hex').toUpperCase(), buffer.readInt16LE(), buffer.readInt16BE()]
 }
 
-
-async function async_all_read() {
-    var promises = []
-    // DW8
-    var addr = 63
-    promises.push(master.readHoldingRegisters(addr, 180, 2, parse_fractions).catch(console.error)) // PF
-    promises.push(master.readHoldingRegisters(addr, 183, 2, parse_fractions).catch(console.error)) // kW
-    promises.push(master.readHoldingRegisters(addr, 189, 2, parse_fractions).catch(console.error)) // kWh
-    promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
-    promises.push(master.readHoldingRegisters(addr, 197, 2, parse_fractions).catch(console.error)) // AI
-    promises.push(master.readHoldingRegisters(addr, 214, 2, parse_fractions).catch(console.error)) // BV
-    promises.push(master.readHoldingRegisters(addr, 217, 2, parse_fractions).catch(console.error)) // BI
-    promises.push(master.readHoldingRegisters(addr, 234, 2, parse_fractions).catch(console.error)) // CV
-    promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
-    result = await Promise.all(promises)
-    console.log(result)
-    async_all_read()
+function sniff32(buffer) {
+  const hex_str = buffer.toString('hex').toUpperCase()
+  const intbe = buffer.readInt32BE()
+  const floatbe = buffer.readFloatBE()
+  buffer.swap16()
+  return [hex_str, buffer.readInt32LE(), buffer.readFloatLE(), intbe, floatbe]
 }
-async_all_read()
+
+; (async function async_all_read() {
+  var promises = []
+  promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error)) // 三相有功功率
+  promises.push(master.readHoldingRegisters(addr, 0x132, 2, sniff32).catch(console.error)) // 頻率
+  promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16).catch(console.error)) // A相電流基波比
+  // promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
+  // promises.push(master.readHoldingRegisters(addr, 197, 2, parse_fractions).catch(console.error)) // AI
+  // promises.push(master.readHoldingRegisters(addr, 214, 2, parse_fractions).catch(console.error)) // BV
+  // promises.push(master.readHoldingRegisters(addr, 217, 2, parse_fractions).catch(console.error)) // BI
+  // promises.push(master.readHoldingRegisters(addr, 234, 2, parse_fractions).catch(console.error)) // CV
+  // promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
+  result = await Promise.all(promises)
+  console.log(result)
+  async_all_read()
+})()
+
+function get_plc_settings() {
+  return {
+    name: 'Geo9',
+    location: '宜蘭清水九號井',
+    rtus: [
+      {
+        name: '發電機300kVA',
+        type: 'nhr3500',
+        addr: 72,
+        fc03: [
+          {
+            addr: 0x118,
+            type: 'float32',
+            mult: 10,
+            name: '三相有功功率',
+            unit: 'kW',
+            min: 0,
+            max: 200
+          },
+          {
+            addr: 0x120,
+            type: 'float32',
+            mult: 10,
+            name: '三相無功功率',
+            unit: 'kvar',
+            min: 0,
+            max: 200
+          },
+          {
+            addr: 0x128,
+            type: 'float32',
+            mult: 10,
+            name: '三相視在功率',
+            unit: 'kVA',
+            min: 0,
+            max: 200
+          },
+          {
+            addr: 0x130,
+            type: 'uint32',
+            mult: 1000,
+            name: '三相功因',
+            unit: '',
+            min: 0,
+            max: 1
+          },
+          {
+            addr: 0x132,
+            type: 'uint32',
+            mult: 1000,
+            name: '頻率',
+            unit: 'Hz',
+            min: 0,
+            max: 100
+          },
+          {
+            addr: 0x608,
+            type: 'uint32',
+            mult: 100,
+            name: '有功發電量',
+            unit: 'kWh',
+            min: 0,
+            max: 'auto'
+          },
+          {
+            addr: 0x60A,
+            type: 'uint32',
+            mult: 100,
+            name: '無功發電量',
+            unit: 'kvarh',
+            min: 0,
+            max: 'auto'
+          },
+          {
+            addr: 0x60C,
+            type: 'uint32',
+            mult: 100,
+            name: '視在發電量',
+            unit: 'kVAh',
+            min: 0,
+            max: 'auto'
+          },
+          {
+            addr: 0x106,
+            type: 'uint32',
+            mult: 100,
+            name: 'AB線電壓',
+            unit: 'V',
+            min: 0,
+            max: 600
+          },
+          {
+            addr: 0x10C,
+            type: 'uint32',
+            mult: 1000,
+            name: 'A相電流',
+            unit: 'A',
+            min: 0,
+            max: 200
+          },
+          {
+            addr: 0x108,
+            type: 'uint32',
+            mult: 100,
+            name: 'BC線電壓',
+            unit: 'V',
+            min: 0,
+            max: 600
+          },
+          {
+            addr: 0x10E,
+            type: 'uint32',
+            mult: 1000,
+            name: 'B相電流',
+            unit: 'A',
+            min: 0,
+            max: 200
+          },
+          {
+            addr: 0x10A,
+            type: 'uint32',
+            mult: 100,
+            name: 'CA線電壓',
+            unit: 'V',
+            min: 0,
+            max: 600
+          },
+          {
+            addr: 0x110,
+            type: 'uint32',
+            mult: 1000,
+            name: 'C相電流',
+            unit: 'A',
+            min: 0,
+            max: 200
+          },
+          {
+            addr: 0x1000,
+            type: 'uint16',
+            mult: 100,
+            name: 'A相電流基波比',
+            unit: 'A',
+            min: 0,
+            max: 200
+          },
+          {
+            addr: 0x1001,
+            type: 'uint16',
+            mult: 100,
+            name: 'B相電流基波比',
+            unit: 'A',
+            min: 0,
+            max: 200
+          },
+          {
+            addr: 0x1002,
+            type: 'uint16',
+            mult: 100,
+            name: 'C相電流基波比',
+            unit: 'A',
+            min: 0,
+            max: 200
+          }
+        ]
+      }
+    ]
+  }
+}

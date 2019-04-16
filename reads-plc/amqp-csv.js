@@ -3,7 +3,7 @@ const config = require('config')
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
     'logdir': 'log',
-    'totalmax': '8GB',
+    'totalmax': '80GB',
     'filemax': '10MB',
     'ampqstr': 'amqp://localhost',
   }
@@ -17,23 +17,19 @@ const _ = require('lodash');
 const json2csv = require('json2csv');
 const amqplib = require('amqplib');
 const filesizeParser = require('filesize-parser');
-const winston = require('winston')
-const logger = new (winston.Logger)({
-    transports: [
-      new (winston.transports.Console)({
-        // setup console logging with timestamps
-        level: 'debug',
-        timestamp: function() {
-          return (new Date()).toISOString();
-        },
-        formatter: function(options) {
-          return options.timestamp() + ' ' + options.level[0].toUpperCase() + ' ' + (options.message ? options.message : '') +
-            (options.meta && Object.keys(options.meta).length ? JSON.stringify(options.meta, null, 2) : '' );
-        }
-      })
-    ]
-});
-
+const { createLogger, format, transports } = require('winston')
+const logger = createLogger({
+  level: 'debug',
+  format: format.combine(
+    format.splat(),
+    format.timestamp(),
+    format.ms(),
+    format.simple()
+  ),
+  transports: [
+    new transports.Console()
+  ]
+})
 const logdir = path.resolve(argv.logdir);
 const total_max = filesizeParser(argv.totalmax);
 const file_max = filesizeParser(argv.filemax);
