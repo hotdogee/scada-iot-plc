@@ -45,6 +45,11 @@ logger.info(`User ${email}, Password ${password}`)
           storage: localStorage
         })
       )
+    logger.info(`authenticate`, {
+      strategy: 'local',
+      email,
+      password
+    })
     const token = await supervisor.authenticate({
       strategy: 'local',
       email,
