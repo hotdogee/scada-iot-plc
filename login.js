@@ -40,9 +40,9 @@ logger.info(`User ${email}, Password ${password}`)
     const supervisor = feathers()
       .configure(socketio(socket))
       .configure(hooks())
-      // .configure(auth({
-      //   storage: localStorage
-      // }))
+      .configure(auth({
+        // storage: localStorage
+      }))
     
     const token = await supervisor.authenticate({
       strategy: 'local',
