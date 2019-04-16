@@ -30,8 +30,6 @@ logger.info(`User ${email}, Password ${password}`)
     // const Storage = require('dom-storage')
     // var localStorage = new Storage('./localStorage.json')
     await localStorage.init()
-    localStorage.setItem = localStorage.setItemSync
-    localStorage.getItem = localStorage.getItemSync
     
     const ioConfig = config.get('supervisor')
     logger.info(`Connecting to feathers server: `, ioConfig)
