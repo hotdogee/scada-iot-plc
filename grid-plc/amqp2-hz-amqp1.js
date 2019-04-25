@@ -42,6 +42,7 @@ require('dotenv').config()
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
+    'threshold': 50,
     'amqp1Url': process.env.AMQP1URL,
     'amqp2Url': process.env.AMQP2URL || 'amqp://localhost',
   }
@@ -103,7 +104,7 @@ async function main() {
     const tag2 = await channel2.consume(q2.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
-        if (message && message.reads && message.reads[0] && message.reads[0].reads && message.reads[0].reads[0] && message.reads[0].reads[0].value && message.reads[0].reads[0].value > 39.4) {
+        if (message && message.reads && message.reads[0] && message.reads[0].reads && message.reads[0].reads[0] && message.reads[0].reads[0].value && message.reads[0].reads[0].value > argv.threshold) {
           logger.warning('Freq > 40Hz: %s Hz', JSON.stringify(message.reads[0].reads[0].value))
         } else {
           logger.info('message: %s', JSON.stringify(message))
