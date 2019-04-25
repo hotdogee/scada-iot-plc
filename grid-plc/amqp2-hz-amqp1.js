@@ -82,14 +82,14 @@ async function main() {
       logger.error('amqplib.connect: %s', err)
       process.exit()
     })
-    logger.info('%s connected', argv.amqp2Url)
+    logger.info('%s connected 2', argv.amqp2Url)
     
     // channel is a Channel object
     const channel2 = await connection2.createChannel().catch(err => {
       logger.error('connection.createChannel: %s', err)
       process.exit()
     })
-    logger.info('Channel created')
+    logger.info('Channel2 created')
 
     // assert exchange
     const ex2 = await channel2.assertExchange(exchangeName2, 'topic', {durable: false})
@@ -98,6 +98,7 @@ async function main() {
     // console.log('reads exchange:', ok); // { exchange: 'reads' }
     const q2 = await channel2.assertQueue('', {exclusive: true})
     logger.info('assertQueue: %s', q2) // { queue: 'logger', messageCount: 0,
+    await channel2.bindQueue(q2.queue, exchangeName2, routingKey2) // {}
     const tag2 = await channel2.consume(q2.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
