@@ -22,7 +22,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     'button': 24,
     'buttonPull': 'up',
     'wait': 500, // valve state changes can not happen more than one in 500ms
-    'amqpUrl': process.env.AMQP2URL || 'amqp://localhost'
+    'amqpUrl': process.env.AMQP1URL || 'amqp://localhost'
   }
 })
 const logger = require('../lib/logger')
