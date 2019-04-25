@@ -34,8 +34,8 @@
 // (no data loss if internet fail, minimum data loss if power failure)
 //
 // node rtu-amqp.js --serial=/dev/ttyUSB0
-// sudo node grid-plc/rtu2-amqp1.js --serial /dev/ttyUSB0 --amqpUrl amqp://hotdogee:r711$bebi-rabbitmq@192.168.2.21
-// sudo node grid-plc/rtu2-amqp1.js --serial /dev/ttyUSB0
+// sudo node grid-plc/rtu2-amqp2.js --serial /dev/ttyUSB0 --amqpUrl 
+// sudo node grid-plc/rtu2-amqp2.js --serial /dev/ttyUSB0
 //
 const config = require('config')
 
@@ -178,8 +178,7 @@ async function main() {
   const hostname = os.hostname();
   console.log('Hostname:', hostname);
 
-  // assert ampq reads exchange
-  const ex_reads = 'reads';
+  let channel = null
   // connect to ampq server
   try {
     // connect to ampq server, connection is a ChannelModel object
@@ -191,7 +190,7 @@ async function main() {
     logger.info('%s connected', argv.amqpUrl)
     
     // channel is a Channel object
-    const channel = await connection.createChannel().catch(err => {
+    channel = await connection.createChannel().catch(err => {
       logger.error('connection.createChannel: %s', err)
       process.exit()
     })
@@ -244,7 +243,7 @@ async function main() {
         reads: result
       }
       console.log(JSON.stringify(msg, null, 1));
-      channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)));
+      // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)));
       // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)), { persistent: true });
       console.log(t, i++);
     } catch (e) {

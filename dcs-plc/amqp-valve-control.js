@@ -3,8 +3,9 @@
 // sudo node amqp-valve-control.js --wait 1000
 // sudo node amqp-valve-control.js --relay 18 --button 22 --wait 1000
 // sudo node amqp-valve-control.js --amqpUrl amqp://192.168.3.174
-// sudo node amqp-valve-control.js --amqpUrl amqp://hotdogee:r711$bebi-rabbitmq@192.168.3.174
-// sudo node amqp-valve-control.js --amqpUrl amqp://hotdogee:r711$bebi-rabbitmq@192.168.2.21
+// sudo node amqp-valve-control.js --amqpUrl
+// sudo node amqp-valve-control.js --amqpUrl
+// sudo node dcs-plc/amqp-valve-control.js --amqpUrl
 
 // RPi Relay Board
 // All the terminals are low active
@@ -12,6 +13,7 @@
 // CH2 - GPIO20 - PIN38
 // CH3 - GPIO21 - PIN40
 
+require('dotenv').config()
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
@@ -20,7 +22,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     'button': 24,
     'buttonPull': 'up',
     'wait': 500, // valve state changes can not happen more than one in 500ms
-    'amqpUrl': 'amqp://localhost'
+    'amqpUrl': process.env.AMQP2URL || 'amqp://localhost'
   }
 })
 const logger = require('../lib/logger')
