@@ -47,6 +47,7 @@ const argv = require('minimist')(process.argv.slice(2), {
   }
 });
 
+const logger = require('../lib/logger')
 const os = require('os');
 const util = require('util')
 const _ = require('lodash');
