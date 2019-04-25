@@ -4,6 +4,7 @@
 // sudo node amqp-valve-control.js --relay 18 --button 22 --wait 1000
 // sudo node amqp-valve-control.js --amqpUrl amqp://192.168.3.174
 // sudo node amqp-valve-control.js --amqpUrl amqp://hotdogee:r711$bebi-rabbitmq@192.168.3.174
+// sudo node amqp-valve-control.js --amqpUrl amqp://hotdogee:r711$bebi-rabbitmq@192.168.2.21
 
 // RPi Relay Board
 // All the terminals are low active
