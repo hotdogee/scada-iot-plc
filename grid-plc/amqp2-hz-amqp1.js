@@ -105,7 +105,7 @@ async function main() {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
         if (message && message.reads && message.reads[0] && message.reads[0].reads && message.reads[0].reads[0] && message.reads[0].reads[0].value && message.reads[0].reads[0].value > argv.threshold) {
-          logger.warning('Freq > 40Hz: %s Hz', JSON.stringify(message.reads[0].reads[0].value))
+          logger.warn('Freq > 40Hz: %s Hz', JSON.stringify(message.reads[0].reads[0].value))
         } else {
           logger.info('message: %s', JSON.stringify(message))
         }
