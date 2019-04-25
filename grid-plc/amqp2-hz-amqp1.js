@@ -104,11 +104,10 @@ async function main() {
     const tag2 = await channel2.consume(q2.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
-        if (message && message.reads && message.reads[0] && message.reads[0].reads && message.reads[0].reads[0] && message.reads[0].reads[0].value && message.reads[0].reads[0].value >= 0) {
+        if (message && message.reads && message.reads[0] && message.reads[0].reads && message.reads[0].reads[0] && message.reads[0].reads[0].value >= 0) {
           logger.warn('Freq > 40Hz: %s Hz', JSON.stringify(message.reads[0].reads[0].value))
         } else {
           logger.info('message: %s', JSON.stringify(message))
-          logger.warn('Freq < 40Hz: %s Hz', JSON.stringify(message.reads[0].reads[0].value))
         }
       }
     }, {noAck: true})
