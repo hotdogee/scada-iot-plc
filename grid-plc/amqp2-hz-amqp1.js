@@ -101,10 +101,11 @@ async function main() {
     const tag2 = await channel2.consume(q2.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
-        if (message && message.reads && message.reads[0] && message.reads[0].reads && message.reads[0].reads[0] && message.reads[0].reads[0].value && message.reads[0].reads[0].value > 40) {
+        if (message && message.reads && message.reads[0] && message.reads[0].reads && message.reads[0].reads[0] && message.reads[0].reads[0].value && message.reads[0].reads[0].value > 39.4) {
           logger.warning('Freq > 40Hz: %s Hz', JSON.stringify(message.reads[0].reads[0].value))
+        } else {
+          logger.info('message: %s', JSON.stringify(message))
         }
-        logger.info('message: %s', JSON.stringify(message))
       }
     }, {noAck: true})
     logger.info('consume: %s', tag2) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' } 
