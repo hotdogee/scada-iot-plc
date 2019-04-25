@@ -34,7 +34,8 @@
 // (no data loss if internet fail, minimum data loss if power failure)
 //
 // node rtu-amqp.js --serial=/dev/ttyUSB0
-// sudo node rtu2-amqp1.js --amqpUrl amqp://hotdogee:r711$bebi-rabbitmq@192.168.2.21
+// sudo node grid-plc/rtu2-amqp1.js --serial /dev/ttyUSB0 --amqpUrl amqp://hotdogee:r711$bebi-rabbitmq@192.168.2.21
+// sudo node grid-plc/rtu2-amqp1.js --serial /dev/ttyUSB0
 //
 const config = require('config')
 
@@ -165,6 +166,9 @@ var RTU = {
   }
 }
 
+const exchangeName = 'reads'
+const routingKey = 'geo9-pi3p2.grid.plc'
+
 async function main() {
   // get machine uuid
   const uuid = (await get_uuid()).replace(/-/g, '');
@@ -177,10 +181,26 @@ async function main() {
   const ex_reads = 'reads';
   // connect to ampq server
   try {
-    const connection = await amqplib.connect(argv.ampqstr);
-    var channel = await connection.createChannel();
-    const ok = await channel.assertExchange(ex_reads, 'fanout');
-    console.log('reads exchange:', ok); // { exchange: 'reads' }
+    // connect to ampq server, connection is a ChannelModel object
+    // 'amqp://localhost'
+    const connection = await amqplib.connect(argv.amqpUrl).catch(err => {
+      logger.error('amqplib.connect: %s', err)
+      process.exit()
+    })
+    logger.info('%s connected', argv.amqpUrl)
+    
+    // channel is a Channel object
+    const channel = await connection.createChannel().catch(err => {
+      logger.error('connection.createChannel: %s', err)
+      process.exit()
+    })
+    logger.info('Channel created')
+
+    // assert exchange
+    const ex = await channel.assertExchange(exchangeName, 'topic', {durable: false})
+    logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
+    // const ok = await channel.assertExchange(ex_reads, 'fanout');
+    // console.log('reads exchange:', ok); // { exchange: 'reads' }
   } catch (e) {
     console.error('Error:', e.message);
     // return;
@@ -223,7 +243,8 @@ async function main() {
         reads: result
       }
       console.log(JSON.stringify(msg, null, 1));
-      // channel.publish(ex_reads, '', Buffer.from(JSON.stringify(msg)), { persistent: true });
+      channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)));
+      // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)), { persistent: true });
       console.log(t, i++);
     } catch (e) {
       console.error('Error:', e.message);
