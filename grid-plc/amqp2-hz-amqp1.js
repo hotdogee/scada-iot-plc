@@ -108,6 +108,7 @@ async function main() {
           logger.warn('Freq > 40Hz: %s Hz', JSON.stringify(message.reads[0].reads[0].value))
         } else {
           logger.info('message: %s', JSON.stringify(message))
+          logger.info('Freq < 40Hz: %s Hz', JSON.stringify(message.reads[0].reads[0].value))
         }
       }
     }, {noAck: true})
