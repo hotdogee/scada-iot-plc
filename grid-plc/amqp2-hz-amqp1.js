@@ -98,7 +98,8 @@ async function main() {
     // console.log('reads exchange:', ok); // { exchange: 'reads' }
     const q2 = await channel2.assertQueue('', {exclusive: true})
     logger.info('assertQueue: %s', q2) // { queue: 'logger', messageCount: 0,
-    await channel2.bindQueue(q2.queue, exchangeName2, routingKey2) // {}
+    const ok = await channel2.bindQueue(q2.queue, exchangeName2, routingKey2) // {}
+    logger.info('bindQueue: %s', ok) // { queue: 'logger', messageCount: 0,
     const tag2 = await channel2.consume(q2.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
