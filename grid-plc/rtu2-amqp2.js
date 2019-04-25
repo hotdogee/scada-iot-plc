@@ -243,7 +243,7 @@ async function main() {
         reads: result
       }
       console.log(JSON.stringify(msg, null, 1));
-      // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)));
+      channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)));
       // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)), { persistent: true });
       console.log(t, i++);
     } catch (e) {
