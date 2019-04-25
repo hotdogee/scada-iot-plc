@@ -93,13 +93,13 @@ async function main() {
 
     // assert exchange
     const ex2 = await channel2.assertExchange(exchangeName2, 'topic', {durable: false})
-    logger.info('assertExchange: %s', ex2) // { exchange: 'reads' }
+    logger.info('assertExchange: %s', JSON.stringify(ex2)) // { exchange: 'reads' }
     // const ok = await channel.assertExchange(ex_reads, 'fanout');
     // console.log('reads exchange:', ok); // { exchange: 'reads' }
     const q2 = await channel2.assertQueue('', {exclusive: true})
-    logger.info('assertQueue: %s', q2) // { queue: 'logger', messageCount: 0,
+    logger.info('assertQueue: %s', JSON.stringify(q2)) // { queue: 'logger', messageCount: 0,
     const ok = await channel2.bindQueue(q2.queue, exchangeName2, routingKey2) // {}
-    logger.info('bindQueue: %s', ok) // { queue: 'logger', messageCount: 0,
+    logger.info('bindQueue: %s', JSON.stringify(ok)) // { queue: 'logger', messageCount: 0,
     const tag2 = await channel2.consume(q2.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
@@ -110,7 +110,7 @@ async function main() {
         }
       }
     }, {noAck: true})
-    logger.info('consume: %s', tag2) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' } 
+    logger.info('consume: %s', JSON.stringify(tag2) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' } 
   } catch (e) {
     console.error('Error:', e.message);
     // return;
