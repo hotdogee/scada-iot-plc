@@ -110,7 +110,7 @@ async function main() {
         }
       }
     }, {noAck: true})
-    logger.info('consume: %s', JSON.stringify(tag2) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' } 
+    logger.info('consume: %s', JSON.stringify(tag2)) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' } 
   } catch (e) {
     console.error('Error:', e.message);
     // return;
