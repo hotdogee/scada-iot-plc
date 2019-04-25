@@ -75,6 +75,39 @@ async function main() {
   const hostname = os.hostname();
   console.log('Hostname:', hostname);
 
+  // connect to ampq server1
+  let channel1 = null
+  try {
+    // connect to ampq server, connection is a ChannelModel object
+    // 'amqp://localhost'
+    const connection1 = await amqplib.connect(argv.amqp1Url).catch(err => {
+      logger.error('amqplib.connect: %s', err)
+      process.exit()
+    })
+    logger.info('%s connected 1', argv.amqp1Url)
+    
+    // channel is a Channel object
+    channel1 = await connection1.createChannel().catch(err => {
+      logger.error('connection.createChannel: %s', err)
+      process.exit()
+    })
+    logger.info('Channel1 created')
+
+    // assert exchange
+    const ex1 = await channel1.assertExchange(exchangeName1, 'topic', {durable: false})
+    logger.info('assertExchange1: %s', JSON.stringify(ex1)) // { exchange: 'reads' }
+    // const ok = await channel.assertExchange(ex_reads, 'fanout');
+    // console.log('reads exchange:', ok); // { exchange: 'reads' }
+    // const q1 = await channel1.assertQueue('', {exclusive: true})
+    // logger.info('assertQueue1: %s', JSON.stringify(q2)) // { queue: 'logger', messageCount: 0,
+    // const ok = await channel1.bindQueue(q1.queue, exchangeName1, routingKey1) // {}
+    // logger.info('bindQueue1: %s', JSON.stringify(ok)) // { queue: 'logger', messageCount: 0,
+  } catch (e) {
+    console.error('Error:', e.message);
+    // return;
+    process.exit()
+  }
+
   // connect to ampq server2
   try {
     // connect to ampq server, connection is a ChannelModel object
@@ -106,6 +139,12 @@ async function main() {
         const message = JSON.parse(msg.content.toString())
         if (message && message.reads && message.reads[0] && message.reads[0].reads && message.reads[0].reads[0] && message.reads[0].reads[0].value >= argv.threshold) {
           logger.warn('Freq > %dHz: %s Hz', argv.threshold, JSON.stringify(message.reads[0].reads[0].value))
+          const msg = {
+            shutoff_valve1: {
+              state: 0
+            }
+          }
+          channel1.publish(exchangeName1, routingKey1, Buffer.from(JSON.stringify(msg)))
         } else {
           logger.info('message: %s', JSON.stringify(message))
         }
