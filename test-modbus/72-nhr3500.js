@@ -1,3 +1,4 @@
+// sudo node test-modbus/72-nhr3500.js --serial /dev/ttyUSB0
 const util = require('util')
 const SerialPort = require('serialport')
 const modbus = require('modbus-rtu')
@@ -93,9 +94,12 @@ function sniff32(buffer) {
 
 ; (async function async_all_read() {
   var promises = []
-  promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error)) // 三相有功功率
-  promises.push(master.readHoldingRegisters(addr, 0x132, 2, sniff32).catch(console.error)) // 頻率
-  promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16).catch(console.error)) // A相電流基波比
+  // 三相有功功率 浮点形
+  promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error))
+  // 頻率 长整形
+  promises.push(master.readHoldingRegisters(addr, 0x132, 2, sniff32).catch(console.error))
+  // A相電流基波比 整形
+  promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16).catch(console.error))
   // promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
   // promises.push(master.readHoldingRegisters(addr, 197, 2, parse_fractions).catch(console.error)) // AI
   // promises.push(master.readHoldingRegisters(addr, 214, 2, parse_fractions).catch(console.error)) // BV
