@@ -84,27 +84,27 @@ function get_serial() {
         { addr: 0x60C, name: '視在電量', factor: 100, unit: 'kVAh', type: 'readInt32BE' }
       ])).catch(console.error))
       // larger than 9 results in buffer.length = 0
-      promises.push(master.readHoldingRegisters(addr, 0x1000, 3, parseMulti(0x1000, 3, [
-        { addr: 0x1000, name: 'A相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
-        { addr: 0x1001, name: 'B相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
-        { addr: 0x1002, name: 'C相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
-        // { addr: 0x1003, name: 'AB線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
-        // { addr: 0x1004, name: 'BC線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
-        // { addr: 0x1005, name: 'CA線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
-        // { addr: 0x1006, name: 'A相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
-        // { addr: 0x1007, name: 'B相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
-        // { addr: 0x1008, name: 'C相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' }
-      ])).catch(console.error))
+      // promises.push(master.readHoldingRegisters(addr, 0x1000, 3, parseMulti(0x1000, 3, [
+      //   { addr: 0x1000, name: 'A相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
+      //   { addr: 0x1001, name: 'B相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
+      //   { addr: 0x1002, name: 'C相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
+      //   // { addr: 0x1003, name: 'AB線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+      //   // { addr: 0x1004, name: 'BC線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+      //   // { addr: 0x1005, name: 'CA線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+      //   // { addr: 0x1006, name: 'A相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+      //   // { addr: 0x1007, name: 'B相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+      //   // { addr: 0x1008, name: 'C相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' }
+      // ])).catch(console.error))
       // // larger than 30 results in buffer.length = 0
       // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, parseMulti(0x1100, 30, [
       //   { addr: 0x1100, name: 'A相電流2-31次諧波含有率', factor: 100, unit: '%', type: 'readInt16BE', len: 30 }
       // ])).catch(console.error))
       // A相電流2-31次諧波含有率 整數 readInt16BEArray
-      promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('A相電流2-31次諧波含有率', 100, 30)).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readHarmonics('A相電流2-31次諧波含有率', 100, 30)).catch(console.error))
       // B相電流2-31次諧波含有率 整數 readInt16BEArray
-      promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('B相電流2-31次諧波含有率', 100, 30)).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readHarmonics('B相電流2-31次諧波含有率', 100, 30)).catch(console.error))
       // C相電流2-31次諧波含有率 整數 readInt16BEArray
-      promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電流2-31次諧波含有率', 100, 30)).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readHarmonics('C相電流2-31次諧波含有率', 100, 30)).catch(console.error))
       // // AB線電壓2-31次諧波含有率 整數 readInt16BEArray
       // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('AB線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // BC線電壓2-31次諧波含有率 整數 readInt16BEArray
@@ -228,6 +228,21 @@ function readInt16BEArray (name, factor = 1, len = 1) {
       [name]: [...Array(len).keys()].map(i => {
         return buffer.readInt16BE(i * 2) / factor
       })
+    }
+  }
+
+  function readHarmonics (name, factor = 1, len = 1) {
+    return (buffer) => {
+      const h2_31 = [...Array(len).keys()].map(i => {
+        return buffer.readInt16BE(i * 2) / factor
+      })
+      const h1 = [h2_31.reduce((acc, h) => {
+        acc -= h
+        return acc
+      }, 1.0)]
+      return {
+        [name]: h1 + h2_31
+      }
     }
   }
 }
