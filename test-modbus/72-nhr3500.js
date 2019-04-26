@@ -64,44 +64,44 @@ function get_serial() {
 
     ;(async function parse() {
       const promises = []
-      // A-B線電壓 長整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x106, 2, readInt32BE(100)).catch(console.error))
-      // B-C線電壓 長整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x108, 2, sniff32factor(100)).catch(console.error))
-      // C-A線電壓 長整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x10A, 2, sniff32factor(100)).catch(console.error))
-      // 三相有功功率 浮點形 readFloatBE
-      promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32factor(10)).catch(console.error))
-      // 總相無功功率 浮點形 readFloatBE
-      promises.push(master.readHoldingRegisters(addr, 0x120, 2, sniff32factor(10)).catch(console.error))
-      // 總相視在功率 浮點形 readFloatBE
-      promises.push(master.readHoldingRegisters(addr, 0x128, 2, sniff32factor(10)).catch(console.error))
-      // 總相功率因數 長整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x130, 2, sniff32factor(1000)).catch(console.error))
-      // 總有功電能 長整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x608, 2, sniff32factor(100)).catch(console.error))
-      // 總無功電能 長整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x60A, 2, sniff32factor(100)).catch(console.error))
-      // 視在電能 長整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x60C, 2, sniff32factor(100)).catch(console.error))
-      // A相電流基波比 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16factor(100)).catch(console.error))
-      // B相電流基波比 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1001, 1, sniff16factor(100)).catch(console.error))
-      // C相電流基波比 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1002, 1, sniff16factor(100)).catch(console.error))
-      // A-B線電壓基波含有率 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1003, 1, sniff16factor(100)).catch(console.error))
-      // B-C線電壓基波含有率 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1004, 1, sniff16factor(100)).catch(console.error))
-      // C-A線電壓基波含有率 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1005, 1, sniff16factor(100)).catch(console.error))
-      // A相電壓基波含有率 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1006, 1, sniff16factor(100)).catch(console.error))
-      // B相電壓基波含有率 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1007, 1, sniff16factor(100)).catch(console.error))
-      // C相電壓基波含有率 整形 readInt32BE
-      promises.push(master.readHoldingRegisters(addr, 0x1008, 1, sniff16factor(100)).catch(console.error))
+      // AB線電壓 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x106, 2, readInt32BE('AB線電壓', 100)).catch(console.error))
+      // BC線電壓 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x108, 2, readInt32BE('BC線電壓', 100)).catch(console.error))
+      // CA線電壓 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x10A, 2, readInt32BE('CA線電壓', 100)).catch(console.error))
+      // 有功功率 浮點數 readFloatBE
+      promises.push(master.readHoldingRegisters(addr, 0x118, 2, readFloatBE('有功功率', 10)).catch(console.error))
+      // 無功功率 浮點數 readFloatBE
+      promises.push(master.readHoldingRegisters(addr, 0x120, 2, readFloatBE('無功功率', 10)).catch(console.error))
+      // 視在功率 浮點數 readFloatBE
+      promises.push(master.readHoldingRegisters(addr, 0x128, 2, readFloatBE('視在功率', 10)).catch(console.error))
+      // 功率因數 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x130, 2, readInt32BE('功率因數', 1000)).catch(console.error))
+      // 有功電量 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x608, 2, readInt32BE('有功電量', 100)).catch(console.error))
+      // 無功電量 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x60A, 2, readInt32BE('無功電量', 100)).catch(console.error))
+      // 視在電量 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x60C, 2, readInt32BE('視在電量', 100)).catch(console.error))
+      // A相電流基波比 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1000, 1, readInt16BE('A相電流基波比', 100)).catch(console.error))
+      // B相電流基波比 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1001, 1, readInt16BE('B相電流基波比', 100)).catch(console.error))
+      // C相電流基波比 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1002, 1, readInt16BE('C相電流基波比', 100)).catch(console.error))
+      // AB線電壓基波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1003, 1, readInt16BE('AB線電壓基波含有率', 100)).catch(console.error))
+      // BC線電壓基波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1004, 1, readInt16BE('BC線電壓基波含有率', 100)).catch(console.error))
+      // CA線電壓基波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1005, 1, readInt16BE('CA線電壓基波含有率', 100)).catch(console.error))
+      // A相電壓基波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1006, 1, readInt16BE('A相電壓基波含有率', 100)).catch(console.error))
+      // B相電壓基波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1007, 1, readInt16BE('B相電壓基波含有率', 100)).catch(console.error))
+      // C相電壓基波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1008, 1, readInt16BE('C相電壓基波含有率', 100)).catch(console.error))
       result = await Promise.all(promises)
       console.log(result)
 
@@ -110,43 +110,43 @@ function get_serial() {
 
     ;(async function sniff() {
       const promises = []
-      // A-B線電壓 長整形 readInt32BE
+      // A-B線電壓 長整數 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x106, 2, sniff32factor(100)).catch(console.error))
-      // B-C線電壓 長整形 readInt32BE
+      // B-C線電壓 長整數 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x108, 2, sniff32factor(100)).catch(console.error))
-      // C-A線電壓 長整形 readInt32BE
+      // C-A線電壓 長整數 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x10A, 2, sniff32factor(100)).catch(console.error))
-      // 三相有功功率 浮點形 readFloatBE
+      // 三相有功功率 浮點數 readFloatBE
       promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32factor(10)).catch(console.error))
-      // 總相無功功率 浮點形 readFloatBE
+      // 總相無功功率 浮點數 readFloatBE
       promises.push(master.readHoldingRegisters(addr, 0x120, 2, sniff32factor(10)).catch(console.error))
-      // 總相視在功率 浮點形 readFloatBE
+      // 總相視在功率 浮點數 readFloatBE
       promises.push(master.readHoldingRegisters(addr, 0x128, 2, sniff32factor(10)).catch(console.error))
-      // 總相功率因數 長整形 readInt32BE
+      // 總相功率因數 長整數 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x130, 2, sniff32factor(1000)).catch(console.error))
-      // 總有功電能 長整形 readInt32BE
+      // 總有功電量 長整數 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x608, 2, sniff32factor(100)).catch(console.error))
-      // 總無功電能 長整形 readInt32BE
+      // 總無功電量 長整數 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x60A, 2, sniff32factor(100)).catch(console.error))
-      // 視在電能 長整形 readInt32BE
+      // 視在電量 長整數 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x60C, 2, sniff32factor(100)).catch(console.error))
-      // A相電流基波比 整形 readInt32BE
+      // A相電流基波比 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16factor(100)).catch(console.error))
-      // B相電流基波比 整形 readInt32BE
+      // B相電流基波比 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1001, 1, sniff16factor(100)).catch(console.error))
-      // C相電流基波比 整形 readInt32BE
+      // C相電流基波比 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1002, 1, sniff16factor(100)).catch(console.error))
-      // A-B線電壓基波含有率 整形 readInt32BE
+      // A-B線電壓基波含有率 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1003, 1, sniff16factor(100)).catch(console.error))
-      // B-C線電壓基波含有率 整形 readInt32BE
+      // B-C線電壓基波含有率 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1004, 1, sniff16factor(100)).catch(console.error))
-      // C-A線電壓基波含有率 整形 readInt32BE
+      // C-A線電壓基波含有率 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1005, 1, sniff16factor(100)).catch(console.error))
-      // A相電壓基波含有率 整形 readInt32BE
+      // A相電壓基波含有率 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1006, 1, sniff16factor(100)).catch(console.error))
-      // B相電壓基波含有率 整形 readInt32BE
+      // B相電壓基波含有率 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1007, 1, sniff16factor(100)).catch(console.error))
-      // C相電壓基波含有率 整形 readInt32BE
+      // C相電壓基波含有率 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1008, 1, sniff16factor(100)).catch(console.error))
       // promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
       // promises.push(master.readHoldingRegisters(addr, 197, 2, parse_fractions).catch(console.error)) // AI
@@ -186,22 +186,22 @@ function get_serial() {
         readFloatLE: -1.5880092555551663e+28,
         readInt32BE: 119563468.8,
         readFloatBE: 5016 },
-      { hex: '000003A4', // 總相功率因數 長整形 readInt32BE
+      { hex: '000003A4', // 總相功率因數 長整數 readInt32BE
         readInt32LE: 61079.552,
         readFloatLE: 9.639053676742758e-40,
         readInt32BE: 0.932,
         readFloatBE: 1.3060101687507296e-45 },
-      { hex: '00025F26', // 總有功電能 長整形 readInt32BE
+      { hex: '00025F26', // 總有功電量 長整數 readInt32BE
         readInt32LE: 15963258.9,
         readFloatLE: 119615628093192930,
         readInt32BE: 1554.3,
         readFloatBE: 2.178038203100063e-42 },
-      { hex: '00006D3B', // 總無功電能 長整形 readInt32BE
+      { hex: '00006D3B', // 總無功電量 長整數 readInt32BE
         readInt32LE: 18325831.68,
         readFloatLE: 3.6171060522869707e+25,
         readInt32BE: 279.63,
         readFloatBE: 3.918450895791486e-43 },
-      { hex: '0002922F', // 視在電能 長整形 readInt32BE
+      { hex: '0002922F', // 視在電量 長整數 readInt32BE
         readInt32LE: -18424135.66,
         readFloatLE: -5.522027299512055e-30,
         readInt32BE: 1684.95,
@@ -290,6 +290,30 @@ function sniff32factor (factor = 1) {
       readFloatLE: buffer.readFloatLE() / factor,
       readInt32BE: intbe / factor,
       readFloatBE: floatbe / factor
+    }
+  }
+}
+
+function readInt32BE (name, factor = 1) {
+  return (buffer) => {
+    return {
+      [name]: buffer.readInt32BE() / factor
+    }
+  }
+}
+
+function readFloatBE (name, factor = 1) {
+  return (buffer) => {
+    return {
+      [name]: buffer.readFloatBE() / factor
+    }
+  }
+}
+
+function readInt16BE (name, factor = 1) {
+  return (buffer) => {
+    return {
+      [name]: buffer.readInt16BE() / factor
     }
   }
 }
