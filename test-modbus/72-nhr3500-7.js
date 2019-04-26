@@ -104,7 +104,7 @@ function get_serial() {
       // B相電流2-31次諧波含有率 整數 readInt16BEArray
       promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('B相電流2-31次諧波含有率', 100, 30)).catch(console.error))
       // C相電流2-31次諧波含有率 整數 readInt16BEArray
-      promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電流2-31次諧波含有率', 100), 30).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電流2-31次諧波含有率', 100, 30)).catch(console.error))
       // // AB線電壓2-31次諧波含有率 整數 readInt16BEArray
       // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('AB線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // BC線電壓2-31次諧波含有率 整數 readInt16BEArray
