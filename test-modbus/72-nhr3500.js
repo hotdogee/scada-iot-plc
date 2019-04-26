@@ -64,7 +64,7 @@ function get_serial() {
     responseTimeout: 250
   })
 
-  (async function async_all_read() {
+  ;(async function async_all_read() {
    const promises = []
    // 三相有功功率 浮点形
    promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error))
