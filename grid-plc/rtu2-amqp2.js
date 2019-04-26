@@ -34,7 +34,7 @@
 // (no data loss if internet fail, minimum data loss if power failure)
 //
 // node rtu-amqp.js --serial=/dev/ttyUSB0
-// sudo node grid-plc/rtu2-amqp2.js --serial /dev/ttyUSB0 --amqpUrl 
+// sudo node grid-plc/rtu2-amqp2.js --serial /dev/ttyUSB0 --amqpUrl
 // sudo node grid-plc/rtu2-amqp2.js --serial /dev/ttyUSB0
 //
 const config = require('config')
@@ -91,6 +91,20 @@ function get_plc_settings() {
     name: 'Geo9',
     location: '宜蘭清水九號井',
     rtus: [
+      // {
+      //   name: '併接點',
+      //   type: 'nhr3800',
+      //   addr: 70,
+      //   fc03: [
+      //     {
+      //       addr: 256,
+      //       name: '頻率',
+      //       unit: 'Hz',
+      //       min: 0,
+      //       max: 100
+      //     }
+      //   ]
+      // },
       {
         name: '發電機300kVA',
         type: 'nhr3800',
@@ -105,6 +119,34 @@ function get_plc_settings() {
           }
         ]
       }
+      // {
+      //   name: '併接點',
+      //   type: 'nhr3500',
+      //   addr: 72,
+      //   fc03: [
+      //     {
+      //       addr: 256,
+      //       name: '頻率',
+      //       unit: 'Hz',
+      //       min: 0,
+      //       max: 100
+      //     }
+      //   ]
+      // },
+      // {
+      //   name: '發電機300kVA',
+      //   type: 'nhr3500',
+      //   addr: 73,
+      //   fc03: [
+      //     {
+      //       addr: 256,
+      //       name: '頻率',
+      //       unit: 'Hz',
+      //       min: 0,
+      //       max: 100
+      //     }
+      //   ]
+      // }
     ]
   }
 }
@@ -188,7 +230,7 @@ async function main() {
       process.exit()
     })
     logger.info('%s connected', argv.amqpUrl)
-    
+
     // channel is a Channel object
     channel = await connection.createChannel().catch(err => {
       logger.error('connection.createChannel: %s', err)

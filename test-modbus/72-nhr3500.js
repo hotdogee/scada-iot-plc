@@ -17,35 +17,37 @@ function get_serial() {
     // list available serial ports
     SerialPort.list((err, ports) => {
       if (err) {
-        console.error(err);
-        reject(err);
+        console.error(err)
+        reject(err)
       }
       if (ports.length == 0) {
-        reject(Error('No serial ports found.'));
+        reject(Error('No serial ports found.'))
       } else if (argv.serial == 'auto') {
         if (ports.length == 1) {
-          resolve(ports[0].comName);
+          resolve(ports[0].comName)
         } else {
-          reject(Error('Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' + ports.map(port => port.comName).join(', ')));
+          reject(Error('Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' + ports.map(port => port.comName).join(', ')))
         }
       } else if (ports.map(port => port.comName).indexOf(argv.serial) != -1) {
-        resolve(argv.serial);
+        resolve(argv.serial)
       } else {
-        reject(Error('Serial port "' + argv.serial + '" not found.'));
+        reject(Error('Serial port "' + argv.serial + '" not found.'))
       }
-    });
-  });
+    })
+  })
 }
 
 // auto detect or try to use specified serial port
-try {
-  const serial = await get_serial();
-  console.log('Serial port:', serial);
-} catch (e) {
-  console.error('Error:', e.message);
-  // return;
-  process.exit()
-}
+(async function () {
+  try {
+    const serial = await get_serial()
+    console.log('Serial port:', serial)
+  } catch (e) {
+    console.error('Error:', e.message)
+    // return
+    process.exit()
+  }
+})()
 
 // NHR3500
 const addr = argv.addr
@@ -60,7 +62,7 @@ var master = new modbus.ModbusMaster(new SerialPort(port, {
     endPacketTimeout: 19,
     queueTimeout: 50,
     responseTimeout: 500
-  });
+  })
 
 function parse_fractions(buffer) {
   return buffer.readUInt16BE() + buffer.readUInt16BE(2) / 65536
@@ -71,12 +73,12 @@ function parse_uint16(buffer) {
 }
 
 function parse_float2(buffer) {
-  buffer.swap16();
+  buffer.swap16()
   return [buffer.readFloatLE(), buffer.readFloatLE(4)]
 }
 
 function parse_uint32_4(buffer) {
-  //buffer.swap16();
+  //buffer.swap16()
   return [buffer.readUInt32BE(), buffer.readUInt32BE(4), buffer.readUInt32BE(8), buffer.readUInt32BE(12)]
 }
 
@@ -92,7 +94,7 @@ function sniff32(buffer) {
   return [hex_str, buffer.readInt32LE(), buffer.readFloatLE(), intbe, floatbe]
 }
 
-; (async function async_all_read() {
+ (async function async_all_read() {
   var promises = []
   // 三相有功功率 浮点形
   promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error))
