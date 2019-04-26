@@ -65,7 +65,7 @@ function get_serial() {
 
     ;(async function parse() {
       const promises = []
-      promises.push(master.readHoldingRegisters(addr, 0x106, 44, parseMulti(0x106, 44, [
+      promises.push(master.readHoldingRegisters(addr, 0x106, 0x60C-0x106+2, parseMulti(0x106, 0x60C-0x106+2, [
         { addr: 0x106, name: 'AB線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
         { addr: 0x108, name: 'BC線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
         { addr: 0x10A, name: 'CA線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
@@ -75,7 +75,10 @@ function get_serial() {
         { addr: 0x118, name: '有功功率', factor: 10, unit: 'kW', type: 'readFloatBE' },
         { addr: 0x120, name: '無功功率', factor: 10, unit: 'kvar', type: 'readFloatBE' },
         { addr: 0x128, name: '視在功率', factor: 10, unit: 'kVA', type: 'readFloatBE' },
-        { addr: 0x130, name: '功率因數', factor: 10, unit: '%', type: 'readInt32BE' }
+        { addr: 0x130, name: '功率因數', factor: 10, unit: '%', type: 'readInt32BE' },
+        { addr: 0x608, name: '有功電量', factor: 100, unit: 'kWh', type: 'readInt32BE' },
+        { addr: 0x60A, name: '無功電量', factor: 100, unit: 'kvarh', type: 'readInt32BE' },
+        { addr: 0x60C, name: '視在電量', factor: 100, unit: 'kVAh', type: 'readInt32BE' }
       ])).catch(console.error))
       // // AB線電壓 長整數 readInt32BE
       // promises.push(master.readHoldingRegisters(addr, 0x106, 2, readInt32BE('AB線電壓', 100)).catch(console.error))
