@@ -53,16 +53,16 @@ function get_serial() {
 const addr = argv.addr
 
 //create ModbusMaster instance and pass the serial port object
-var master = new modbus.ModbusMaster(new SerialPort(port, {
+const master = new modbus.ModbusMaster(new SerialPort(serial, {
   baudrate: 19200, // 19200-8-N-1
   dataBits: 8,
   parity: 'none',
   stopBits: 1
 }), {
-    endPacketTimeout: 19,
-    queueTimeout: 50,
-    responseTimeout: 500
-  })
+  endPacketTimeout: 19,
+  queueTimeout: 50,
+  responseTimeout: 250
+})
 
 function parse_fractions(buffer) {
   return buffer.readUInt16BE() + buffer.readUInt16BE(2) / 65536
@@ -95,7 +95,7 @@ function sniff32(buffer) {
 }
 
  (async function async_all_read() {
-  var promises = []
+  const promises = []
   // 三相有功功率 浮点形
   promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error))
   // 頻率 长整形
