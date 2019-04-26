@@ -47,22 +47,41 @@ function get_serial() {
     // return
     process.exit()
   }
+
+  // NHR3500
+  const addr = argv.addr
+
+  //create ModbusMaster instance and pass the serial port object
+  const master = new modbus.ModbusMaster(new SerialPort(serial, {
+    baudrate: 19200, // 19200-8-N-1
+    dataBits: 8,
+    parity: 'none',
+    stopBits: 1
+  }), {
+    endPacketTimeout: 19,
+    queueTimeout: 50,
+    responseTimeout: 250
+  })
+
+  (async function async_all_read() {
+   const promises = []
+   // 三相有功功率 浮点形
+   promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error))
+   // 頻率 长整形
+   promises.push(master.readHoldingRegisters(addr, 0x132, 2, sniff32).catch(console.error))
+   // A相電流基波比 整形
+   promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16).catch(console.error))
+   // promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
+   // promises.push(master.readHoldingRegisters(addr, 197, 2, parse_fractions).catch(console.error)) // AI
+   // promises.push(master.readHoldingRegisters(addr, 214, 2, parse_fractions).catch(console.error)) // BV
+   // promises.push(master.readHoldingRegisters(addr, 217, 2, parse_fractions).catch(console.error)) // BI
+   // promises.push(master.readHoldingRegisters(addr, 234, 2, parse_fractions).catch(console.error)) // CV
+   // promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
+   result = await Promise.all(promises)
+   console.log(result)
+   async_all_read()
+ })()
 })()
-
-// NHR3500
-const addr = argv.addr
-
-//create ModbusMaster instance and pass the serial port object
-const master = new modbus.ModbusMaster(new SerialPort(serial, {
-  baudrate: 19200, // 19200-8-N-1
-  dataBits: 8,
-  parity: 'none',
-  stopBits: 1
-}), {
-  endPacketTimeout: 19,
-  queueTimeout: 50,
-  responseTimeout: 250
-})
 
 function parse_fractions(buffer) {
   return buffer.readUInt16BE() + buffer.readUInt16BE(2) / 65536
@@ -93,25 +112,6 @@ function sniff32(buffer) {
   buffer.swap16()
   return [hex_str, buffer.readInt32LE(), buffer.readFloatLE(), intbe, floatbe]
 }
-
- (async function async_all_read() {
-  const promises = []
-  // 三相有功功率 浮点形
-  promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error))
-  // 頻率 长整形
-  promises.push(master.readHoldingRegisters(addr, 0x132, 2, sniff32).catch(console.error))
-  // A相電流基波比 整形
-  promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16).catch(console.error))
-  // promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
-  // promises.push(master.readHoldingRegisters(addr, 197, 2, parse_fractions).catch(console.error)) // AI
-  // promises.push(master.readHoldingRegisters(addr, 214, 2, parse_fractions).catch(console.error)) // BV
-  // promises.push(master.readHoldingRegisters(addr, 217, 2, parse_fractions).catch(console.error)) // BI
-  // promises.push(master.readHoldingRegisters(addr, 234, 2, parse_fractions).catch(console.error)) // CV
-  // promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
-  result = await Promise.all(promises)
-  console.log(result)
-  async_all_read()
-})()
 
 function get_plc_settings() {
   return {
