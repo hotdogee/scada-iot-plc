@@ -65,7 +65,8 @@ function get_serial() {
 
     ;(async function parse() {
       const promises = []
-      promises.push(master.readHoldingRegisters(addr, 0x106, 0x60C-0x106+2, parseMulti(0x106, 0x60C-0x106+2, [
+      const len = 46 
+      promises.push(master.readHoldingRegisters(addr, 0x106, len, parseMulti(0x106, len, [
         { addr: 0x106, name: 'AB線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
         { addr: 0x108, name: 'BC線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
         { addr: 0x10A, name: 'CA線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
