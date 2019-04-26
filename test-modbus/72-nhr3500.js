@@ -61,10 +61,18 @@ function get_serial() {
 
     ;(async function async_all_read() {
       const promises = []
+      // A-B线电压 长整形
+      promises.push(master.readHoldingRegisters(addr, 0x106, 2, sniff32).catch(console.error))
+      // B-C线电压 长整形
+      promises.push(master.readHoldingRegisters(addr, 0x108, 2, sniff32).catch(console.error))
+      // C-A线电压 长整形
+      promises.push(master.readHoldingRegisters(addr, 0x10A, 2, sniff32).catch(console.error))
       // 三相有功功率 浮点形
       promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error))
-      // 頻率 长整形
-      promises.push(master.readHoldingRegisters(addr, 0x132, 2, sniff32).catch(console.error))
+      // 总相无功功率 浮点形
+      promises.push(master.readHoldingRegisters(addr, 0x120, 2, sniff32).catch(console.error))
+      // 总相视在功率 浮点形
+      promises.push(master.readHoldingRegisters(addr, 0x128, 2, sniff32).catch(console.error))
       // A相電流基波比 整形
       promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16).catch(console.error))
       // promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
@@ -86,6 +94,21 @@ function get_serial() {
       //   60009,
       //   8.409051954566795e-41 ],
       // [ '03E8', -6141, 1000 ] ]
+
+      // [[01:19:34.033]] [LOG]    [
+      // { hex: '47550C00',
+      //   readInt32LE: 201344853,
+      //   readFloatLE: 9.882227017603013e-32,
+      //   readInt32BE: 1430716428,
+      //   readFloatBE: 13675188453376 },
+      // { hex: '0000EA9F',
+      //   readInt32LE: -358678528,
+      //   readFloatLE: -9.610960265936302e+25,
+      //   readInt32BE: 40938,
+      //   readFloatBE: 5.736635653252936e-41 },
+      // { hex: '03E8',
+      //   readInt16LE: -6141,
+      //   readInt16BE: 1000 } ]
 
       async_all_read()
     })()
