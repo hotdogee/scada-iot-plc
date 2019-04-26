@@ -6,7 +6,8 @@ const util = require('util')
 const SerialPort = require('serialport')
 const modbus = require('modbus-rtu')
 const config = require('config')
-require('console-stamp')(console, '[HH:MM:ss.l]')
+const logger = require('../lib/logger')
+// require('console-stamp')(console, '[HH:MM:ss.l]')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
@@ -145,7 +146,7 @@ function get_serial() {
       // C相電壓2-31次諧波含有率 整數 readInt16BEArray
       promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       result = await Promise.all(promises)
-      console.log(result)
+      logger.info(result)
 
       parse()
     })()
