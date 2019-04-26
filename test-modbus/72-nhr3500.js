@@ -70,6 +70,12 @@ function get_serial() {
       promises.push(master.readHoldingRegisters(addr, 0x108, 2, readInt32BE('BC線電壓', 100)).catch(console.error))
       // CA線電壓 長整數 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x10A, 2, readInt32BE('CA線電壓', 100)).catch(console.error))
+      // A相電流 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x10C, 2, readInt32BE('A相電流', 1000)).catch(console.error))
+      // B相電流 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x10E, 2, readInt32BE('B相電流', 1000)).catch(console.error))
+      // C相電流 長整數 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x110, 2, readInt32BE('C相電流', 1000)).catch(console.error))
       // 有功功率 浮點數 readFloatBE
       promises.push(master.readHoldingRegisters(addr, 0x118, 2, readFloatBE('有功功率', 10)).catch(console.error))
       // 無功功率 浮點數 readFloatBE
