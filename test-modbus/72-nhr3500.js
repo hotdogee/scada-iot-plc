@@ -114,6 +114,18 @@ function get_serial() {
       promises.push(master.readHoldingRegisters(addr, 0x1120, 1, readInt16BE('B相電流2次諧波含有率', 100)).catch(console.error))
       // C相電流2次諧波含有率 整數 readInt16BE
       promises.push(master.readHoldingRegisters(addr, 0x1140, 1, readInt16BE('C相電流2次諧波含有率', 100)).catch(console.error))
+      // AB線電壓2次諧波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1100, 1, readInt16BE('AB線電壓2次諧波含有率', 100)).catch(console.error))
+      // BC線電壓2次諧波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1120, 1, readInt16BE('BC線電壓2次諧波含有率', 100)).catch(console.error))
+      // CA線電壓2次諧波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1140, 1, readInt16BE('CA線電壓2次諧波含有率', 100)).catch(console.error))
+      // A相電壓2次諧波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1100, 1, readInt16BE('A相電壓2次諧波含有率', 100)).catch(console.error))
+      // B相電壓2次諧波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1120, 1, readInt16BE('B相電壓2次諧波含有率', 100)).catch(console.error))
+      // C相電壓2次諧波含有率 整數 readInt16BE
+      promises.push(master.readHoldingRegisters(addr, 0x1140, 1, readInt16BE('C相電壓2次諧波含有率', 100)).catch(console.error))
       result = await Promise.all(promises)
       console.log(result)
 
