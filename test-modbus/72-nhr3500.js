@@ -64,20 +64,44 @@ function get_serial() {
 
     ;(async function async_all_read() {
       const promises = []
-      // A-B线电压 长整形
+      // A-B线电压 长整形 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x106, 2, sniff32factor(100)).catch(console.error))
-      // B-C线电压 长整形
+      // B-C线电压 长整形 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x108, 2, sniff32factor(100)).catch(console.error))
-      // C-A线电压 长整形
+      // C-A线电压 长整形 readInt32BE
       promises.push(master.readHoldingRegisters(addr, 0x10A, 2, sniff32factor(100)).catch(console.error))
-      // 三相有功功率 浮点形
+      // 三相有功功率 浮点形 readFloatBE
       promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32factor(10)).catch(console.error))
-      // 总相无功功率 浮点形
+      // 总相无功功率 浮点形 readFloatBE
       promises.push(master.readHoldingRegisters(addr, 0x120, 2, sniff32factor(10)).catch(console.error))
-      // 总相视在功率 浮点形
+      // 总相视在功率 浮点形 readFloatBE
       promises.push(master.readHoldingRegisters(addr, 0x128, 2, sniff32factor(10)).catch(console.error))
-      // A相電流基波比 整形
-      promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16).catch(console.error))
+      // 总相功率因数 长整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x130, 2, sniff32factor(1000)).catch(console.error))
+      // 总有功电能 长整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x608, 2, sniff32factor(100)).catch(console.error))
+      // 总无功电能 长整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x60A, 2, sniff32factor(100)).catch(console.error))
+      // 视在电能 长整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x60C, 2, sniff32factor(100)).catch(console.error))
+      // A相電流基波比 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16factor(100)).catch(console.error))
+      // B相電流基波比 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1001, 1, sniff16factor(100)).catch(console.error))
+      // C相電流基波比 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1002, 1, sniff16factor(100)).catch(console.error))
+      // A-B线电压基波含有率 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1003, 1, sniff16factor(100)).catch(console.error))
+      // B-C线电压基波含有率 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1004, 1, sniff16factor(100)).catch(console.error))
+      // C-A线电压基波含有率 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1005, 1, sniff16factor(100)).catch(console.error))
+      // A相电压基波含有率 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1006, 1, sniff16factor(100)).catch(console.error))
+      // B相电压基波含有率 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1007, 1, sniff16factor(100)).catch(console.error))
+      // C相电压基波含有率 整形 readInt32BE
+      promises.push(master.readHoldingRegisters(addr, 0x1008, 1, sniff16factor(100)).catch(console.error))
       // promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
       // promises.push(master.readHoldingRegisters(addr, 197, 2, parse_fractions).catch(console.error)) // AI
       // promises.push(master.readHoldingRegisters(addr, 214, 2, parse_fractions).catch(console.error)) // BV
@@ -86,65 +110,38 @@ function get_serial() {
       // promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
       result = await Promise.all(promises)
       console.log(result)
-      // [[01:29:59.588]] [LOG]    [
-      //   { hex: '00009AB7',
-      //     readInt32LE: -1699282944,
-      //     readFloatLE: -7.568702604860203e-23,
-      //     readInt32BE: 39607,
-      //     readFloatBE: 5.550122827651303e-41 },
-      //   { hex: '00009A3F',
-      //     readInt32LE: -1707147264,
-      //     readFloatLE: -3.949787424940707e-23,
-      //     readInt32BE: 39487,
-      //     readFloatBE: 5.533307246079405e-41 },
-      //   { hex: '000099E9',
-      //     readInt32LE: -1712783360,
-      //     readFloatLE: -2.409163534060693e-23,
-      //     readInt32BE: 39401,
-      //     readFloatBE: 5.521256079286212e-41 },
-      //   { hex: '47963C00',
-      //     readInt32LE: 1006651286,
-      //     readFloatLE: 0.007829567417502403,
-      //     readInt32BE: 1201028096,
-      //     readFloatBE: 76920 },
-      //   { hex: '00000000',
-      //     readInt32LE: 0,
-      //     readFloatLE: 0,
-      //     readInt32BE: 0,
-      //     readFloatBE: 0 },
-      //   { hex: '478AFC00',
-      //     readInt32LE: -67090550,
-      //     readFloatLE: -2.6642599298429767e+36,
-      //     readInt32BE: 1200290816,
-      //     readFloatBE: 71160 },
+      // [[01:35:05.231]] [LOG]    [
+      //   { hex: '00009AA9',
+      //     readInt32LE: -17002004.48,
+      //     readFloatLE: -6.989676176073084e-25,
+      //     readInt32BE: 395.93,
+      //     readFloatBE: 5.548161009801248e-43 },
+      //   { hex: '00009A03',
+      //     readInt32LE: -17110794.24,
+      //     readFloatLE: -2.7090165061111657e-25,
+      //     readInt32BE: 394.27,
+      //     readFloatBE: 5.524899455293456e-43 },
+      //   { hex: '0000999B',
+      //     readInt32LE: -17178951.68,
+      //     readFloatLE: -1.6026624368214912e-25,
+      //     readInt32BE: 393.23,
+      //     readFloatBE: 5.5103259512644784e-43 },
+      //   { hex: '47248800',
+      //     readInt32LE: -201324770.8,
+      //     readFloatLE: -3.8602224290546184e-35,
+      //     readInt32BE: 119357644.8,
+      //     readFloatBE: 4212 },
+      //   { hex: '46852000',
+      //     readInt32LE: 53688896.5,
+      //     readFloatLE: 1.0865354680477575e-20,
+      //     readInt32BE: 118312960,
+      //     readFloatBE: 1704 },
+      //   { hex: '47280C00',
+      //     readInt32LE: 20134480.8,
+      //     readFloatLE: 9.882174120357227e-33,
+      //     readInt32BE: 119380684.8,
+      //     readFloatBE: 4302 },
       //   { hex: '03E8', readInt16LE: -6141, readInt16BE: 1000 } ]
-
-      // [[01:14:03.819]] [LOG]    [ [ '4771A400',
-      //   -1543485583,
-      //   -2.781608884052084e-17,
-      //   1198629888,
-      //   61860 ],
-      // [ '0000EA69',
-      //   -362217472,
-      //   -7.041992899255215e+25,
-      //   60009,
-      //   8.409051954566795e-41 ],
-      // [ '03E8', -6141, 1000 ] ]
-
-      // [[01:19:34.033]] [LOG]    [
-      // { hex: '47550C00',
-      //   readInt32LE: 201344853,
-      //   readFloatLE: 9.882227017603013e-32,
-      //   readInt32BE: 1430716428,
-      //   readFloatBE: 13675188453376 },
-      // { hex: '0000EA9F',
-      //   readInt32LE: -358678528,
-      //   readFloatLE: -9.610960265936302e+25,
-      //   readInt32BE: 40938,
-      //   readFloatBE: 5.736635653252936e-41 },
-      // { hex: '03E8',
-      //   readInt16LE: -6141,
-      //   readInt16BE: 1000 } ]
 
       async_all_read()
     })()
