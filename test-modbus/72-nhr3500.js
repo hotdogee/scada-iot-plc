@@ -75,6 +75,18 @@ function get_serial() {
       // promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
       result = await Promise.all(promises)
       console.log(result)
+      [[01:14:03.819]] [LOG]    [ [ '4771A400',
+        -1543485583,
+        -2.781608884052084e-17,
+        1198629888,
+        61860 ],
+      [ '0000EA69',
+        -362217472,
+        -7.041992899255215e+25,
+        60009,
+        8.409051954566795e-41 ],
+      [ '03E8', -6141, 1000 ] ]
+
       async_all_read()
     })()
   } catch (e) {
@@ -103,7 +115,12 @@ function parse_uint32_4(buffer) {
 }
 
 function sniff16(buffer) {
-  return [buffer.toString('hex').toUpperCase(), buffer.readInt16LE(), buffer.readInt16BE()]
+  // return [buffer.toString('hex').toUpperCase(), buffer.readInt16LE(), buffer.readInt16BE()]
+  return {
+    hex: buffer.toString('hex').toUpperCase(),
+    readInt16LE: buffer.readInt16LE(),
+    readInt16BE: buffer.readInt16BE()
+  }
 }
 
 function sniff32(buffer) {
@@ -111,7 +128,14 @@ function sniff32(buffer) {
   const intbe = buffer.readInt32BE()
   const floatbe = buffer.readFloatBE()
   buffer.swap16()
-  return [hex_str, buffer.readInt32LE(), buffer.readFloatLE(), intbe, floatbe]
+  // return [hex_str, buffer.readInt32LE(), buffer.readFloatLE(), intbe, floatbe]
+  return {
+    hex: hex_str,
+    readInt32LE: buffer.readInt32LE(),
+    readFloatLE: buffer.readFloatLE(),
+    readInt32BE: buffer.readInt32BE(),
+    readFloatBE: buffer.readFloatBE(),
+  }
 }
 
 function get_plc_settings() {
