@@ -278,6 +278,9 @@ function readInt16BEArray (name, factor = 1, len = 1) {
 
 function parseMulti (start, total, regs) {
   return (buffer) => {
+    if (buffer.length < (total * 2)) {
+      logger.debug(`buffer.length = ${buffer.length}`)
+    }
     return regs.reduce((res, reg) => {
       res[reg.name] = [buffer[reg.type]((reg.addr - start) * 2) / reg.factor, reg.unit]
       return res
