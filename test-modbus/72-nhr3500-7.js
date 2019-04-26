@@ -65,8 +65,7 @@ function get_serial() {
 
     ;(async function parse() {
       const promises = []
-      const len = 46 // larger than 46 results in buffer.length = 0
-      promises.push(master.readHoldingRegisters(addr, 0x106, len, parseMulti(0x106, len, [
+      promises.push(master.readHoldingRegisters(addr, 0x106, 44, parseMulti(0x106, 44, [
         { addr: 0x106, name: 'AB線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
         { addr: 0x108, name: 'BC線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
         { addr: 0x10A, name: 'CA線電壓', factor: 100, unit: 'V', type: 'readInt32BE' },
@@ -76,37 +75,25 @@ function get_serial() {
         { addr: 0x118, name: '有功功率', factor: 10, unit: 'kW', type: 'readFloatBE' },
         { addr: 0x120, name: '無功功率', factor: 10, unit: 'kvar', type: 'readFloatBE' },
         { addr: 0x128, name: '視在功率', factor: 10, unit: 'kVA', type: 'readFloatBE' },
-        { addr: 0x130, name: '功率因數', factor: 10, unit: '%', type: 'readInt32BE' },
+        { addr: 0x130, name: '功率因數', factor: 10, unit: '%', type: 'readInt32BE' }
+      ])).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x608, 6, parseMulti(0x608, 6, [
         { addr: 0x608, name: '有功電量', factor: 100, unit: 'kWh', type: 'readInt32BE' },
         { addr: 0x60A, name: '無功電量', factor: 100, unit: 'kvarh', type: 'readInt32BE' },
         { addr: 0x60C, name: '視在電量', factor: 100, unit: 'kVAh', type: 'readInt32BE' }
       ])).catch(console.error))
-      // // AB線電壓 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x106, 2, readInt32BE('AB線電壓', 100)).catch(console.error))
-      // // BC線電壓 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x108, 2, readInt32BE('BC線電壓', 100)).catch(console.error))
-      // // CA線電壓 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x10A, 2, readInt32BE('CA線電壓', 100)).catch(console.error))
-      // // A相電流 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x10C, 2, readInt32BE('A相電流', 1000)).catch(console.error))
-      // // B相電流 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x10E, 2, readInt32BE('B相電流', 1000)).catch(console.error))
-      // // C相電流 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x110, 2, readInt32BE('C相電流', 1000)).catch(console.error))
-      // // 有功功率 浮點數 readFloatBE
-      // promises.push(master.readHoldingRegisters(addr, 0x118, 2, readFloatBE('有功功率', 10)).catch(console.error))
-      // // 無功功率 浮點數 readFloatBE
-      // promises.push(master.readHoldingRegisters(addr, 0x120, 2, readFloatBE('無功功率', 10)).catch(console.error))
-      // // 視在功率 浮點數 readFloatBE
-      // promises.push(master.readHoldingRegisters(addr, 0x128, 2, readFloatBE('視在功率', 10)).catch(console.error))
-      // // 功率因數 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x130, 2, readInt32BE('功率因數', 1000)).catch(console.error))
-      // // 有功電量 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x608, 2, readInt32BE('有功電量', 100)).catch(console.error))
-      // // 無功電量 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x60A, 2, readInt32BE('無功電量', 100)).catch(console.error))
-      // // 視在電量 長整數 readInt32BE
-      // promises.push(master.readHoldingRegisters(addr, 0x60C, 2, readInt32BE('視在電量', 100)).catch(console.error))
+      const len = 9
+      promises.push(master.readHoldingRegisters(addr, 0x1000, len, parseMulti(0x1000, len, [
+        { addr: 0x1000, name: 'A相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
+        { addr: 0x1001, name: 'B相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
+        { addr: 0x1002, name: 'C相電流基波比', factor: 100, unit: '%', type: 'readInt16BE' },
+        { addr: 0x1003, name: 'AB線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+        { addr: 0x1004, name: 'BC線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+        { addr: 0x1005, name: 'CA線電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+        { addr: 0x1006, name: 'A相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+        { addr: 0x1007, name: 'B相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
+        { addr: 0x1008, name: 'C相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' }
+      ])).catch(console.error))
       // // A相電流基波比 整數 readInt16BE
       // promises.push(master.readHoldingRegisters(addr, 0x1000, 1, readInt16BE('A相電流基波比', 100)).catch(console.error))
       // // B相電流基波比 整數 readInt16BE
@@ -291,9 +278,7 @@ function readInt16BEArray (name, factor = 1, len = 1) {
 
 function parseMulti (start, total, regs) {
   return (buffer) => {
-    // logger.debug(`buffer.length = ${buffer.length}`)
     return regs.reduce((res, reg) => {
-      // logger.debug(reg)
       res[reg.name] = [buffer[reg.type]((reg.addr - start) * 2) / reg.factor, reg.unit]
       return res
     }, {})
