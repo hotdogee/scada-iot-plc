@@ -83,6 +83,39 @@ function get_serial() {
       // promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
       result = await Promise.all(promises)
       console.log(result)
+      // [[01:26:04.534]] [LOG]    [
+      //   { hex: '00009AB7',
+      //     readInt32LE: -1699282944,
+      //     readFloatLE: -7.568702604860203e-23,
+      //     readInt32BE: 47002,
+      //     readFloatBE: 6.586383042019505e-41 },
+      //   { hex: '00009A03',
+      //     readInt32LE: -1711079424,
+      //     readFloatLE: -2.7090165061111656e-23,
+      //     readInt32BE: 922,
+      //     readFloatBE: 1.2919971841074813e-42 },
+      //   { hex: '000099BD',
+      //     readInt32LE: -1715666944,
+      //     readFloatLE: -1.954214197156528e-23,
+      //     readInt32BE: 48537,
+      //     readFloatBE: 6.801482356293365e-41 },
+      //   { hex: '473C3400',
+      //     readInt32LE: 872433468,
+      //     readFloatLE: 1.1946843869736767e-7,
+      //     readInt32BE: 1011286068,
+      //     readFloatBE: 0.01214604452252388 },
+      //   { hex: '46967800',
+      //     readInt32LE: 2013283990,
+      //     readFloatLE: 1.0406963293579542e+34,
+      //     readInt32BE: -1773797256,
+      //     readFloatBE: -1.5994460536956787e-25 },
+      //   { hex: '47511000',
+      //     readInt32LE: 268453713,
+      //     readFloatLE: 2.529848912800156e-29,
+      //     readInt32BE: 1363607568,
+      //     readFloatBE: 53418721280 },
+      //   { hex: '03E8', readInt16LE: -6141, readInt16BE: 1000 } ]
+
       // [[01:14:03.819]] [LOG]    [ [ '4771A400',
       //   -1543485583,
       //   -2.781608884052084e-17,
@@ -156,8 +189,8 @@ function sniff32(buffer) {
     hex: hex_str,
     readInt32LE: buffer.readInt32LE(),
     readFloatLE: buffer.readFloatLE(),
-    readInt32BE: buffer.readInt32BE(),
-    readFloatBE: buffer.readFloatBE()
+    readInt32BE: intbe,
+    readFloatBE: floatbe
   }
 }
 
