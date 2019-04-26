@@ -54,7 +54,7 @@ function get_serial() {
 
   //create ModbusMaster instance and pass the serial port object
   const master = new modbus.ModbusMaster(new SerialPort(serial, {
-    baudrate: 19200, // 19200-8-N-1
+    baudRate: 19200, // 19200-8-N-1
     dataBits: 8,
     parity: 'none',
     stopBits: 1
