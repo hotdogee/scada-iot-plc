@@ -237,10 +237,10 @@ function readHarmonics (name, factor = 1, len = 1) {
     const h2_31 = [...Array(len).keys()].map(i => {
       return buffer.readInt16BE(i * 2) / factor
     })
-    const h1 = [h2_31.reduce((acc, h) => {
+    const h1 = [parseFloat(h2_31.reduce((acc, h) => {
       acc -= h
       return acc
-    }, 100.0)]
+    }, 100.0).toFixed(2))]
     return {
       [name]: h1.concat(h2_31)
     }
