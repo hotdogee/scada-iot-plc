@@ -75,17 +75,17 @@ function get_serial() {
       // promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
       result = await Promise.all(promises)
       console.log(result)
-      [[01:14:03.819]] [LOG]    [ [ '4771A400',
-        -1543485583,
-        -2.781608884052084e-17,
-        1198629888,
-        61860 ],
-      [ '0000EA69',
-        -362217472,
-        -7.041992899255215e+25,
-        60009,
-        8.409051954566795e-41 ],
-      [ '03E8', -6141, 1000 ] ]
+      // [[01:14:03.819]] [LOG]    [ [ '4771A400',
+      //   -1543485583,
+      //   -2.781608884052084e-17,
+      //   1198629888,
+      //   61860 ],
+      // [ '0000EA69',
+      //   -362217472,
+      //   -7.041992899255215e+25,
+      //   60009,
+      //   8.409051954566795e-41 ],
+      // [ '03E8', -6141, 1000 ] ]
 
       async_all_read()
     })()
@@ -134,7 +134,7 @@ function sniff32(buffer) {
     readInt32LE: buffer.readInt32LE(),
     readFloatLE: buffer.readFloatLE(),
     readInt32BE: buffer.readInt32BE(),
-    readFloatBE: buffer.readFloatBE(),
+    readFloatBE: buffer.readFloatBE()
   }
 }
 
