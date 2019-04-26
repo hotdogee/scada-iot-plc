@@ -1,4 +1,7 @@
 // sudo node test-modbus/72-nhr3500.js --serial /dev/ttyUSB0
+// sudo node test-modbus/72-nhr3500.js --serial /dev/ttyUSB0 --addr 73
+// M72-三相電量-電網	M73-三相電量-發電機
+
 const util = require('util')
 const SerialPort = require('serialport')
 const modbus = require('modbus-rtu')
@@ -62,17 +65,17 @@ function get_serial() {
     ;(async function async_all_read() {
       const promises = []
       // A-B线电压 长整形
-      promises.push(master.readHoldingRegisters(addr, 0x106, 2, sniff32).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x106, 2, sniff32factor(100)).catch(console.error))
       // B-C线电压 长整形
-      promises.push(master.readHoldingRegisters(addr, 0x108, 2, sniff32).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x108, 2, sniff32factor(100)).catch(console.error))
       // C-A线电压 长整形
-      promises.push(master.readHoldingRegisters(addr, 0x10A, 2, sniff32).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x10A, 2, sniff32factor(100)).catch(console.error))
       // 三相有功功率 浮点形
-      promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x118, 2, sniff32factor(10)).catch(console.error))
       // 总相无功功率 浮点形
-      promises.push(master.readHoldingRegisters(addr, 0x120, 2, sniff32).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x120, 2, sniff32factor(10)).catch(console.error))
       // 总相视在功率 浮点形
-      promises.push(master.readHoldingRegisters(addr, 0x128, 2, sniff32).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x128, 2, sniff32factor(10)).catch(console.error))
       // A相電流基波比 整形
       promises.push(master.readHoldingRegisters(addr, 0x1000, 1, sniff16).catch(console.error))
       // promises.push(master.readHoldingRegisters(addr, 194, 2, parse_fractions).catch(console.error)) // AV
@@ -83,37 +86,37 @@ function get_serial() {
       // promises.push(master.readHoldingRegisters(addr, 237, 2, parse_fractions).catch(console.error)) // CI
       result = await Promise.all(promises)
       console.log(result)
-      // [[01:26:04.534]] [LOG]    [
+      // [[01:29:59.588]] [LOG]    [
       //   { hex: '00009AB7',
       //     readInt32LE: -1699282944,
       //     readFloatLE: -7.568702604860203e-23,
-      //     readInt32BE: 47002,
-      //     readFloatBE: 6.586383042019505e-41 },
-      //   { hex: '00009A03',
-      //     readInt32LE: -1711079424,
-      //     readFloatLE: -2.7090165061111656e-23,
-      //     readInt32BE: 922,
-      //     readFloatBE: 1.2919971841074813e-42 },
-      //   { hex: '000099BD',
-      //     readInt32LE: -1715666944,
-      //     readFloatLE: -1.954214197156528e-23,
-      //     readInt32BE: 48537,
-      //     readFloatBE: 6.801482356293365e-41 },
-      //   { hex: '473C3400',
-      //     readInt32LE: 872433468,
-      //     readFloatLE: 1.1946843869736767e-7,
-      //     readInt32BE: 1011286068,
-      //     readFloatBE: 0.01214604452252388 },
-      //   { hex: '46967800',
-      //     readInt32LE: 2013283990,
-      //     readFloatLE: 1.0406963293579542e+34,
-      //     readInt32BE: -1773797256,
-      //     readFloatBE: -1.5994460536956787e-25 },
-      //   { hex: '47511000',
-      //     readInt32LE: 268453713,
-      //     readFloatLE: 2.529848912800156e-29,
-      //     readInt32BE: 1363607568,
-      //     readFloatBE: 53418721280 },
+      //     readInt32BE: 39607,
+      //     readFloatBE: 5.550122827651303e-41 },
+      //   { hex: '00009A3F',
+      //     readInt32LE: -1707147264,
+      //     readFloatLE: -3.949787424940707e-23,
+      //     readInt32BE: 39487,
+      //     readFloatBE: 5.533307246079405e-41 },
+      //   { hex: '000099E9',
+      //     readInt32LE: -1712783360,
+      //     readFloatLE: -2.409163534060693e-23,
+      //     readInt32BE: 39401,
+      //     readFloatBE: 5.521256079286212e-41 },
+      //   { hex: '47963C00',
+      //     readInt32LE: 1006651286,
+      //     readFloatLE: 0.007829567417502403,
+      //     readInt32BE: 1201028096,
+      //     readFloatBE: 76920 },
+      //   { hex: '00000000',
+      //     readInt32LE: 0,
+      //     readFloatLE: 0,
+      //     readInt32BE: 0,
+      //     readFloatBE: 0 },
+      //   { hex: '478AFC00',
+      //     readInt32LE: -67090550,
+      //     readFloatLE: -2.6642599298429767e+36,
+      //     readInt32BE: 1200290816,
+      //     readFloatBE: 71160 },
       //   { hex: '03E8', readInt16LE: -6141, readInt16BE: 1000 } ]
 
       // [[01:14:03.819]] [LOG]    [ [ '4771A400',
@@ -193,6 +196,34 @@ function sniff32(buffer) {
     readFloatBE: floatbe
   }
 }
+
+function sniff16factor (factor = 1) {
+  return (buffer) => {
+    return {
+      hex: buffer.toString('hex').toUpperCase(),
+      readInt16LE: buffer.readInt16LE() / factor,
+      readInt16BE: buffer.readInt16BE() / factor
+    }
+  }
+}
+
+function sniff32factor (factor = 1) {
+  return (buffer) => {
+    const hex_str = buffer.toString('hex').toUpperCase()
+    const intbe = buffer.readInt32BE()
+    const floatbe = buffer.readFloatBE()
+    buffer.swap16()
+    // return [hex_str, buffer.readInt32LE(), buffer.readFloatLE(), intbe, floatbe]
+    return {
+      hex: hex_str,
+      readInt32LE: buffer.readInt32LE() / factor,
+      readFloatLE: buffer.readFloatLE() / factor,
+      readInt32BE: intbe / factor,
+      readFloatBE: floatbe / factor
+    }
+  }
+}
+
 
 function get_plc_settings() {
   return {
