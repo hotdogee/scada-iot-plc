@@ -230,19 +230,19 @@ function readInt16BEArray (name, factor = 1, len = 1) {
       })
     }
   }
+}
 
-  function readHarmonics (name, factor = 1, len = 1) {
-    return (buffer) => {
-      const h2_31 = [...Array(len).keys()].map(i => {
-        return buffer.readInt16BE(i * 2) / factor
-      })
-      const h1 = [h2_31.reduce((acc, h) => {
-        acc -= h
-        return acc
-      }, 1.0)]
-      return {
-        [name]: h1 + h2_31
-      }
+function readHarmonics (name, factor = 1, len = 1) {
+  return (buffer) => {
+    const h2_31 = [...Array(len).keys()].map(i => {
+      return buffer.readInt16BE(i * 2) / factor
+    })
+    const h1 = [h2_31.reduce((acc, h) => {
+      acc -= h
+      return acc
+    }, 1.0)]
+    return {
+      [name]: h1 + h2_31
     }
   }
 }
