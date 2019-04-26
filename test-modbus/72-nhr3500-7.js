@@ -95,29 +95,28 @@ function get_serial() {
         { addr: 0x1007, name: 'B相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' },
         { addr: 0x1008, name: 'C相電壓基波含有率', factor: 100, unit: '%', type: 'readInt16BE' }
       ])).catch(console.error))
-      // larger than 9 results in buffer.length = 0
-      promises.push(master.readHoldingRegisters(addr, 0x1100, 64, parseMulti(0x1100, 64, [
-        { addr: 0x1100, name: 'A相電流2-31次諧波含有率', factor: 100, unit: '%', type: 'readInt16BE', len: 30 },
-        { addr: 0x1120, name: 'B相電流2-31次諧波含有率', factor: 100, unit: '%', type: 'readInt16BE', len: 30 }
-      ])).catch(console.error))
-      // // A相電流2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('A相電流2-31次諧波含有率', 100, 30)).catch(console.error))
-      // // B相電流2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('B相電流2-31次諧波含有率', 100, 30)).catch(console.error))
-      // // C相電流2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電流2-31次諧波含有率', 100), 30).catch(console.error))
+      // // larger than 30 results in buffer.length = 0
+      // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, parseMulti(0x1100, 30, [
+      //   { addr: 0x1100, name: 'A相電流2-31次諧波含有率', factor: 100, unit: '%', type: 'readInt16BE', len: 30 }
+      // ])).catch(console.error))
+      // A相電流2-31次諧波含有率 整數 readInt16BEArray
+      promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('A相電流2-31次諧波含有率', 100, 30)).catch(console.error))
+      // B相電流2-31次諧波含有率 整數 readInt16BEArray
+      promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('B相電流2-31次諧波含有率', 100, 30)).catch(console.error))
+      // C相電流2-31次諧波含有率 整數 readInt16BEArray
+      promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電流2-31次諧波含有率', 100), 30).catch(console.error))
       // // AB線電壓2-31次諧波含有率 整數 readInt16BEArray
       // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('AB線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // BC線電壓2-31次諧波含有率 整數 readInt16BEArray
       // promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('BC線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // CA線電壓2-31次諧波含有率 整數 readInt16BEArray
       // promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('CA線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
-      // // A相電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('A相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
-      // // B相電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('B相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      // A相電壓2-31次諧波含有率 整數 readInt16BEArray
+      promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('A相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      // B相電壓2-31次諧波含有率 整數 readInt16BEArray
+      promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('B相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // C相電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       result = await Promise.all(promises)
       logger.info(result)
       parse()
