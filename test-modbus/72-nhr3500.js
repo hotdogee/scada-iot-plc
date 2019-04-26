@@ -39,8 +39,9 @@ function get_serial() {
 
 // auto detect or try to use specified serial port
 (async function () {
+  let serial = null
   try {
-    const serial = await get_serial()
+    serial = await get_serial()
     console.log('Serial port:', serial)
   } catch (e) {
     console.error('Error:', e.message)
