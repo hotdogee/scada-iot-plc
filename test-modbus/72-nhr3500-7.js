@@ -240,9 +240,9 @@ function readHarmonics (name, factor = 1, len = 1) {
     const h1 = [h2_31.reduce((acc, h) => {
       acc -= h
       return acc
-    }, 1.0)]
+    }, 100.0)]
     return {
-      [name]: h1 + h2_31
+      [name]: h1.concat(h2_31)
     }
   }
 }
