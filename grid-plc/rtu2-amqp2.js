@@ -98,7 +98,7 @@ function getPlcSettings () {
           {
             code: 3,
             start: 0x106,
-            len: 44,
+            len: 46,
             regs: [
               {
                 addr: 0x106,
@@ -167,6 +167,13 @@ function getPlcSettings () {
                 addr: 0x130,
                 name: '功率因數',
                 factor: 10,
+                unit: '%',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x132,
+                name: '頻率',
+                factor: 1000,
                 unit: '%',
                 type: 'readInt32BE'
               }
@@ -300,7 +307,7 @@ function getPlcSettings () {
           {
             code: 3,
             start: 0x106,
-            len: 44,
+            len: 46,
             regs: [
               {
                 addr: 0x106,
@@ -369,6 +376,13 @@ function getPlcSettings () {
                 addr: 0x130,
                 name: '功率因數',
                 factor: 10,
+                unit: '%',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x132,
+                name: '頻率',
+                factor: 1000,
                 unit: '%',
                 type: 'readInt32BE'
               }
