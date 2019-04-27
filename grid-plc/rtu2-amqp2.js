@@ -271,9 +271,9 @@ async function main() {
     //debug: true
   });
 
-  var ps = get_plc_settings();
-  var i = 1;
-  var t = 0;
+  const ps = get_plc_settings();
+  let i = 1;
+  let t = 0;
   async function read() {
     console.time('read');
     t++;
