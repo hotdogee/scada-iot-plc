@@ -144,7 +144,7 @@ function uint32BeD100 (reg) {
   }
 }
 
-var RTU = {
+const RTU = {
   nhr3800: {
     read: (master, rtu) => {
       return new Promise(async (resolve, reject) => {

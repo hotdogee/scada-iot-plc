@@ -39,8 +39,8 @@
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    'serial': 'auto',
-    'ampqstr': 'amqp://localhost'
+    serial: 'auto',
+    ampqstr: 'amqp://localhost'
   }
 })
 
@@ -512,7 +512,7 @@ function parse_fractions (reg) {
       name: reg.name,
       unit: reg.unit,
       value: buffer.readUInt16BE() + buffer.readUInt16BE(2) / 65536,
-      time: (new Date()).toJSON()
+      time: new Date().toJSON()
     }
   }
 }
@@ -535,7 +535,7 @@ function uint32_be_d100 (reg) {
       name: reg.name,
       unit: reg.unit,
       value: buffer.readUInt32BE() / 100,
-      time: (new Date()).toJSON()
+      time: new Date().toJSON()
     }
   }
 }
@@ -548,7 +548,7 @@ function s16_uint32_le_d1000 (reg) {
       name: reg.name,
       unit: reg.unit,
       value: buffer.readUInt32LE() / 1000,
-      time: (new Date()).toJSON()
+      time: new Date().toJSON()
     }
   }
 }
@@ -561,7 +561,7 @@ function s16_float_le (reg) {
       name: reg.name,
       unit: reg.unit,
       value: buffer.readFloatLE(),
-      time: (new Date()).toJSON()
+      time: new Date().toJSON()
     }
   }
 }
@@ -572,14 +572,14 @@ function float_be (reg) {
       name: reg.name,
       unit: reg.unit,
       value: buffer.readFloatBE(),
-      time: (new Date()).toJSON()
+      time: new Date().toJSON()
     }
   }
 }
 
 function float_be_x (length) {
-  return (buffer) => {
-    return _.range(0, 4 * length, 4).map((offset) => {
+  return buffer => {
+    return _.range(0, 4 * length, 4).map(offset => {
       return buffer.readFloatBE(offset)
     })
   }
@@ -592,13 +592,23 @@ var RTU = {
         let max = 2
         let promise = null
         for (let i = 0; i < max; i++) {
-          if (rtu.fc03.length == 2) {
-            promise = master.readHoldingRegisters(rtu.addr, 0, 4, s16_float_le_2)
+          if (rtu.fc03.length === 2) {
+            promise = master.readHoldingRegisters(
+              rtu.addr,
+              0,
+              4,
+              s16_float_le_2
+            )
           } else {
-            promise = master.readHoldingRegisters(rtu.addr, rtu.fc03[0].addr, 2, s16_float_le_1)
+            promise = master.readHoldingRegisters(
+              rtu.addr,
+              rtu.fc03[0].addr,
+              2,
+              s16_float_le_1
+            )
           }
           let data = await promise.catch(err => {
-            if (i + 1 == max) {
+            if (i + 1 === max) {
               console.log('RTU.nhr5200.read', rtu.name, rtu.addr, err)
               reject(err)
             }
@@ -614,7 +624,7 @@ var RTU = {
                 name: rtu.fc03[i].name,
                 unit: rtu.fc03[i].unit,
                 value: data[i],
-                time: (new Date()).toJSON()
+                time: new Date().toJSON()
               }
             }
             resolve(result)
@@ -629,9 +639,17 @@ var RTU = {
       return new Promise(async (resolve, reject) => {
         let max = 2
         for (let i = 0; i < max; i++) {
-          let data = await Promise.all(rtu.fc03.map(reg =>
-            master.readHoldingRegisters(rtu.addr, reg.addr, 2, parse_fractions(reg)))).catch(err => {
-            if (i + 1 == max) {
+          let data = await Promise.all(
+            rtu.fc03.map(reg =>
+              master.readHoldingRegisters(
+                rtu.addr,
+                reg.addr,
+                2,
+                parse_fractions(reg)
+              )
+            )
+          ).catch(err => {
+            if (i + 1 === max) {
               console.log('RTU.dw8.read', rtu.name, rtu.addr, err)
               reject(err)
             }
@@ -654,8 +672,16 @@ var RTU = {
       return new Promise(async (resolve, reject) => {
         let max = 2
         for (let i = 0; i < max; i++) {
-          let data = await Promise.all(rtu.fc03.map(reg =>
-            master.readHoldingRegisters(rtu.addr, reg.addr, 2, parse_fractions(reg)))).catch(err => {
+          let data = await Promise.all(
+            rtu.fc03.map(reg =>
+              master.readHoldingRegisters(
+                rtu.addr,
+                reg.addr,
+                2,
+                parse_fractions(reg)
+              )
+            )
+          ).catch(err => {
             if (i + 1 == max) {
               console.log('RTU.dw9.read', rtu.name, rtu.addr, err)
               reject(err)
@@ -679,16 +705,24 @@ var RTU = {
       return new Promise(async (resolve, reject) => {
         let max = 2
         for (let i = 0; i < max; i++) {
-          let data = await Promise.all(rtu.fc03.map(reg =>
-            master.readHoldingRegisters(rtu.addr, reg.addr, 2, uint32_be_d100(reg)))).catch(err => {
+          let data = await Promise.all(
+            rtu.fc03.map(reg =>
+              master.readHoldingRegisters(
+                rtu.addr,
+                reg.addr,
+                2,
+                uint32_be_d100(reg)
+              )
+            )
+          ).catch(err => {
             if (i + 1 == max) {
               console.log('RTU.nhr3800.read', rtu.name, rtu.addr, err)
               return [
                 {
-                  'name': '頻率',
-                  'unit': 'Hz',
-                  'value': -1,
-                  'time': (new Date()).toJSON()
+                  name: '頻率',
+                  unit: 'Hz',
+                  value: -1,
+                  time: new Date().toJSON()
                 }
               ]
             }
@@ -739,10 +773,10 @@ var RTU = {
             addr: rtu.addr,
             reads: [
               {
-                'name': '轉速',
-                'unit': 'Hz',
-                'value': -1,
-                'time': (new Date()).toJSON()
+                name: '轉速',
+                unit: 'Hz',
+                value: -1,
+                time: new Date().toJSON()
               }
             ]
           }
@@ -757,16 +791,19 @@ var RTU = {
       return new Promise(async (resolve, reject) => {
         let max = 2
         for (let i = 0; i < max; i++) {
-          let data = await Promise.all(rtu.fc04.map(reg =>
-            master.readInputRegisters(rtu.addr, reg.addr, 2, float_be(reg)))).catch(err => {
+          let data = await Promise.all(
+            rtu.fc04.map(reg =>
+              master.readInputRegisters(rtu.addr, reg.addr, 2, float_be(reg))
+            )
+          ).catch(err => {
             if (i + 1 == max) {
               console.log('RTU.sinldg.read', rtu.name, rtu.addr, err)
               return [
                 {
-                  'name': '流量',
-                  'unit': 'm3/h',
-                  'value': -1,
-                  'time': (new Date()).toJSON()
+                  name: '流量',
+                  unit: 'm3/h',
+                  value: -1,
+                  time: new Date().toJSON()
                 }
               ]
             }
@@ -791,9 +828,14 @@ var RTU = {
         let promise = null
         for (let i = 0; i < max; i++) {
           let length = 3
-          promise = master.readInputRegisters(rtu.addr, 167, 2 * length, float_be_x(length))
+          promise = master.readInputRegisters(
+            rtu.addr,
+            167,
+            2 * length,
+            float_be_x(length)
+          )
           let data = await promise.catch(err => {
-            if (i + 1 == max) {
+            if (i + 1 === max) {
               console.log('RTU.gpe.read', rtu.name, rtu.addr, err)
               reject(err)
             }
@@ -805,14 +847,14 @@ var RTU = {
               reads: []
             }
             for (let i in rtu.fc04) {
-              if (rtu.fc04[i].unit == 't/h') {
+              if (rtu.fc04[i].unit === 't/h') {
                 data[i] *= 3.6 // convert kg/s to t/h
               }
               result.reads[i] = {
                 name: rtu.fc04[i].name,
                 unit: rtu.fc04[i].unit,
                 value: data[i],
-                time: (new Date()).toJSON()
+                time: new Date().toJSON()
               }
             }
             resolve(result)
@@ -856,17 +898,20 @@ async function main () {
     process.exit()
   }
   // create ModbusMaster instance and pass the serial port object
-  const master = new modbus.ModbusMaster(new SerialPort(serial, {
-    baudRate: 9600, // 9600-8-N-1
-    dataBits: 8,
-    parity: 'none',
-    stopBits: 1
-  }), {
-    endPacketTimeout: 19,
-    queueTimeout: 50,
-    responseTimeout: 250
-    // debug: true
-  })
+  const master = new modbus.ModbusMaster(
+    new SerialPort(serial, {
+      baudRate: 9600, // 9600-8-N-1
+      dataBits: 8,
+      parity: 'none',
+      stopBits: 1
+    }),
+    {
+      endPacketTimeout: 19,
+      queueTimeout: 50,
+      responseTimeout: 250
+      // debug: true
+    }
+  )
 
   var ps = getPlcSettings()
   var i = 1
@@ -875,14 +920,18 @@ async function main () {
     console.time('read')
     t++
     try {
-      let result = await Promise.all(ps.rtus.map(rtu => RTU[rtu.type].read(master, rtu)))
+      let result = await Promise.all(
+        ps.rtus.map(rtu => RTU[rtu.type].read(master, rtu))
+      )
       let msg = {
         name: ps.name,
-        logTime: (new Date()).toJSON(),
+        logTime: new Date().toJSON(),
         reads: result
       }
       console.log(JSON.stringify(msg, null, 1))
-      channel.publish(exReads, '', Buffer.from(JSON.stringify(msg)), { persistent: true })
+      channel.publish(exReads, '', Buffer.from(JSON.stringify(msg)), {
+        persistent: true
+      })
       console.log(t, i++)
     } catch (e) {
       console.error('Error:', e.message)
