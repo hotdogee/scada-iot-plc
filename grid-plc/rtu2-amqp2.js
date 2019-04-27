@@ -36,32 +36,33 @@
 // node rtu-amqp.js --serial=/dev/ttyUSB0
 // sudo node grid-plc/rtu2-amqp2.js --serial /dev/ttyUSB0 --amqpUrl
 // sudo node grid-plc/rtu2-amqp2.js --serial /dev/ttyUSB0
-//
-const config = require('config')
 
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    'serial': 'auto',
-    'amqpUrl': 'amqp://localhost'
+    serial: 'auto',
+    amqpUrl: 'amqp://localhost'
   }
 })
 
 const logger = require('../lib/logger')
 const os = require('os')
-const util = require('util')
-const _ = require('lodash')
+// const config = require('config')
+// const util = require('util')
+// const _ = require('lodash')
 const SerialPort = require('serialport')
 const modbus = require('modbus-rtu')
 const amqplib = require('amqplib')
 
-function get_uuid () {
+function getUuid () {
   return new Promise((resolve, reject) => {
-    require('machine-uuid')((uuid) => { resolve(uuid) })
+    require('machine-uuid')(uuid => {
+      resolve(uuid)
+    })
   })
 }
 
-function get_serial () {
+function getSerial () {
   return new Promise((resolve, reject) => {
     // list available serial ports
     SerialPort.list((err, ports) => {
@@ -69,15 +70,20 @@ function get_serial () {
         console.error(err)
         reject(err)
       }
-      if (ports.length == 0) {
+      if (ports.length === 0) {
         reject(Error('No serial ports found.'))
-      } else if (argv.serial == 'auto') {
-        if (ports.length == 1) {
+      } else if (argv.serial === 'auto') {
+        if (ports.length === 1) {
           resolve(ports[0].comName)
         } else {
-          reject(Error('Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' + ports.map(port => port.comName).join(', ')))
+          reject(
+            Error(
+              'Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' +
+                ports.map(port => port.comName).join(', ')
+            )
+          )
         }
-      } else if (ports.map(port => port.comName).indexOf(argv.serial) != -1) {
+      } else if (ports.map(port => port.comName).indexOf(argv.serial) !== -1) {
         resolve(argv.serial)
       } else {
         reject(Error('Serial port "' + argv.serial + '" not found.'))
@@ -86,7 +92,7 @@ function get_serial () {
   })
 }
 
-function get_plc_settings () {
+function getPlcSettings () {
   return {
     name: 'Geo9',
     location: '宜蘭清水九號井',
@@ -152,15 +158,15 @@ function get_plc_settings () {
 }
 
 // NHR Series Meter
-function s16_float_le_2 (buffer) {
-  buffer.swap16()
-  return [buffer.readFloatLE(), buffer.readFloatLE(4)]
-}
+// function s16_float_le_2 (buffer) {
+//   buffer.swap16()
+//   return [buffer.readFloatLE(), buffer.readFloatLE(4)]
+// }
 
-function s16_float_le_1 (buffer) {
-  buffer.swap16()
-  return [buffer.readFloatLE()]
-}
+// function s16_float_le_1 (buffer) {
+//   buffer.swap16()
+//   return [buffer.readFloatLE()]
+// }
 
 // nhr3800
 function uint32_be_d100 (reg) {
@@ -169,7 +175,7 @@ function uint32_be_d100 (reg) {
       name: reg.name,
       unit: reg.unit,
       value: buffer.readUInt32BE() / 100,
-      time: (new Date()).toJSON()
+      time: new Date().toJSON()
     }
   }
 }
@@ -180,16 +186,24 @@ var RTU = {
       return new Promise(async (resolve, reject) => {
         let max = 2
         for (let i = 0; i < max; i++) {
-          let data = await Promise.all(rtu.fc03.map(reg =>
-            master.readHoldingRegisters(rtu.addr, reg.addr, 2, uint32_be_d100(reg)))).catch(err => {
-            if (i + 1 == max) {
+          let data = await Promise.all(
+            rtu.fc03.map(reg =>
+              master.readHoldingRegisters(
+                rtu.addr,
+                reg.addr,
+                2,
+                uint32_be_d100(reg)
+              )
+            )
+          ).catch(err => {
+            if (i + 1 === max) {
               console.log('RTU.nhr3800.read', rtu.name, rtu.addr, err)
               return [
                 {
-                  'name': '頻率',
-                  'unit': 'Hz',
-                  'value': -1,
-                  'time': (new Date()).toJSON()
+                  name: '頻率',
+                  unit: 'Hz',
+                  value: -1,
+                  time: new Date().toJSON()
                 }
               ]
             }
@@ -214,7 +228,7 @@ const routingKey = 'geo9-pi3p2.grid.plc'
 
 async function main () {
   // get machine uuid
-  const uuid = (await get_uuid()).replace(/-/g, '')
+  const uuid = (await getUuid()).replace(/-/g, '')
   console.log('Machine UUID:', uuid)
 
   const hostname = os.hostname()
@@ -239,7 +253,9 @@ async function main () {
     logger.info('Channel created')
 
     // assert exchange
-    const ex = await channel.assertExchange(exchangeName, 'topic', { durable: false })
+    const ex = await channel.assertExchange(exchangeName, 'topic', {
+      durable: false
+    })
     logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
     // const ok = await channel.assertExchange(ex_reads, 'fanout');
     // console.log('reads exchange:', ok); // { exchange: 'reads' }
@@ -251,7 +267,7 @@ async function main () {
 
   // auto detect or try to use specified serial port
   try {
-    var serial = await get_serial()
+    var serial = await getSerial()
     console.log('Serial port:', serial)
   } catch (e) {
     console.error('Error:', e.message)
@@ -259,33 +275,42 @@ async function main () {
     process.exit()
   }
   // create ModbusMaster instance and pass the serial port object
-  const master = new modbus.ModbusMaster(new SerialPort(serial, {
-    baudRate: 19200, // 19200-8-N-1
-    dataBits: 8,
-    parity: 'none',
-    stopBits: 1
-  }), {
-    endPacketTimeout: 19,
-    queueTimeout: 50,
-    responseTimeout: 250
-    // debug: true
-  })
+  const master = new modbus.ModbusMaster(
+    new SerialPort(serial, {
+      baudRate: 19200, // 19200-8-N-1
+      dataBits: 8,
+      parity: 'none',
+      stopBits: 1
+    }),
+    {
+      endPacketTimeout: 19,
+      queueTimeout: 50,
+      responseTimeout: 250
+      // debug: true
+    }
+  )
 
-  const ps = get_plc_settings()
+  const ps = getPlcSettings()
   let i = 1
   let t = 0
   async function read () {
     console.time('read')
     t++
     try {
-      let result = await Promise.all(ps.rtus.map(rtu => RTU[rtu.type].read(master, rtu)))
+      let result = await Promise.all(
+        ps.rtus.map(rtu => RTU[rtu.type].read(master, rtu))
+      )
       let msg = {
         name: ps.name,
-        logTime: (new Date()).toJSON(),
+        logTime: new Date().toJSON(),
         reads: result
       }
       console.log(JSON.stringify(msg, null, 1))
-      channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)))
+      channel.publish(
+        exchangeName,
+        routingKey,
+        Buffer.from(JSON.stringify(msg))
+      )
       // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)), { persistent: true });
       console.log(t, i++)
     } catch (e) {

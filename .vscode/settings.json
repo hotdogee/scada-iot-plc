@@ -1,15 +1,7 @@
 {
   "standard.validate": [
-    "javascript",
-    "vue"
+    "javascript"
   ],
-  "standard.options": {
-    "plugins": ["vue"]
-  },
-  "files.associations": {
-    "*.vue": "vue"
-  },
-  "vetur.format.defaultFormatter.js": "prettier-eslint",
   "standard.autoFixOnSave": true,
   "prettier.eslintIntegration": true,
   "prettier.singleQuote": true,
@@ -17,5 +9,5 @@
   "eslint.autoFixOnSave": true,
   "eslint.alwaysShowStatus": true,
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "javascript.format.enable": false
+  "javascript.format.enable": true
 }
