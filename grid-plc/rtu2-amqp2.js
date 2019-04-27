@@ -453,7 +453,7 @@ const RTU = {
             )
           ).catch(err => {
             if (i + 1 === max) {
-              console.log('RTU.nhr3800.read', rtu.name, rtu.addr, err)
+              logger.error('RTU.nhr3800.read', rtu.name, rtu.addr, err)
               return [
                 {
                   name: '頻率',
@@ -533,10 +533,10 @@ const routingKey = 'geo9-pi3p2.grid.plc'
 async function main () {
   // get machine uuid
   const uuid = (await getUuid()).replace(/-/g, '')
-  console.log('Machine UUID:', uuid)
+  logger.info('Machine UUID:', uuid)
 
   const hostname = os.hostname()
-  console.log('Hostname:', hostname)
+  logger.info('Hostname:', hostname)
 
   let channel = null
   // connect to ampq server
@@ -562,9 +562,9 @@ async function main () {
     })
     logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
     // const ok = await channel.assertExchange(ex_reads, 'fanout');
-    // console.log('reads exchange:', ok); // { exchange: 'reads' }
+    // logger.info('reads exchange:', ok); // { exchange: 'reads' }
   } catch (e) {
-    console.error('Error:', e.message)
+    logger.error('Error:', e.message)
     // return;
     process.exit()
   }
@@ -572,9 +572,9 @@ async function main () {
   // auto detect or try to use specified serial port
   try {
     var serial = await getSerial(argv)
-    console.log('Serial port:', serial)
+    logger.info('Serial port:', serial)
   } catch (e) {
-    console.error('Error:', e.message)
+    logger.error('Error:', e.message)
     // return;
     process.exit()
   }
@@ -609,16 +609,19 @@ async function main () {
         logTime: new Date().toJSON(),
         reads: result
       }
-      console.log(JSON.stringify(msg, null, 1))
+      logger.info(msg, { label: 'message' })
       channel.publish(
         exchangeName,
         routingKey,
         Buffer.from(JSON.stringify(msg))
       )
       // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)), { persistent: true });
-      console.log(t, i++)
+      logger.info({
+        tries: t,
+        success: i++
+      }, { label: 'count' })
     } catch (e) {
-      console.error('Error:', e.message)
+      logger.error('Error:', e.message)
     } finally {
       console.timeEnd('read')
       setImmediate(read)
