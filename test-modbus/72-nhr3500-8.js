@@ -6,6 +6,7 @@
 // const config = require('config')
 const SerialPort = require('serialport')
 const modbus = require('modbus-rtu')
+const { flatten } = require('lodash')
 const logger = require('../lib/logger')
 const getSerial = require('../lib/getSerial')
 // require('console-stamp')(console, '[HH:MM:ss.l]')
@@ -86,8 +87,8 @@ const RTU = {
         const maxTries = 2
         for (let tries = 0; tries < maxTries; tries++) {
           const data = await Promise.all(
-            rtu.cmds.reduce((acc, cmd) => {
-              return acc.concat(master[fcNames[cmd.code]](rtu.addr, cmd.start, cmd.len, (buffer) => {
+            rtu.cmds.map(cmd => {
+              return master[fcNames[cmd.code]](rtu.addr, cmd.start, cmd.len, (buffer) => {
                 if (buffer.length < (cmd.len * 2)) {
                   logger.debug(`buffer.length = ${buffer.length}`)
                 }
@@ -107,8 +108,8 @@ const RTU = {
                     time: new Date().toJSON()
                   }
                 })
-              }))
-            }, [])
+              })
+            })
           ).catch(err => {
             if (tries + 1 === maxTries) {
               logger.error('RTU.nhr3500.read', rtu.name, rtu.addr, err)
@@ -119,7 +120,7 @@ const RTU = {
             let result = {
               name: rtu.name,
               addr: rtu.addr,
-              reads: data
+              reads: flatten(data)
             }
             resolve(result)
             break
