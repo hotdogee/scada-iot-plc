@@ -2,12 +2,14 @@
 // sudo node test-modbus/72-nhr3500.js --serial /dev/ttyUSB0 --addr 73
 // M72-三相電量-電網	M73-三相電量-發電機
 
-const util = require('util')
+// const util = require('util')
+// const config = require('config')
 const SerialPort = require('serialport')
 const modbus = require('modbus-rtu')
-const config = require('config')
 const logger = require('../lib/logger')
+const getSerial = require('../lib/getSerial')
 // require('console-stamp')(console, '[HH:MM:ss.l]')
+
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
@@ -16,42 +18,17 @@ const argv = require('minimist')(process.argv.slice(2), {
   }
 })
 
-function get_serial() {
-  return new Promise((resolve, reject) => {
-    // list available serial ports
-    SerialPort.list((err, ports) => {
-      if (err) {
-        console.error(err)
-        reject(err)
-      }
-      if (ports.length == 0) {
-        reject(Error('No serial ports found.'))
-      } else if (argv.serial == 'auto') {
-        if (ports.length == 1) {
-          resolve(ports[0].comName)
-        } else {
-          reject(Error('Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' + ports.map(port => port.comName).join(', ')))
-        }
-      } else if (ports.map(port => port.comName).indexOf(argv.serial) != -1) {
-        resolve(argv.serial)
-      } else {
-        reject(Error('Serial port "' + argv.serial + '" not found.'))
-      }
-    })
-  })
-}
-
 // auto detect or try to use specified serial port
-(async function () {
+;(async function () {
   let serial = null
   try {
-    serial = await get_serial()
+    serial = await getSerial(argv)
     console.log('Serial port:', serial)
 
     // NHR3500
     const addr = argv.addr
 
-    //create ModbusMaster instance and pass the serial port object
+    // create ModbusMaster instance and pass the serial port object
     const master = new modbus.ModbusMaster(new SerialPort(serial, {
       baudRate: 19200, // 19200-8-N-1
       dataBits: 8,
@@ -63,7 +40,7 @@ function get_serial() {
       responseTimeout: 250
     })
 
-    ;(async function parse() {
+    ;(async function parse () {
       const promises = []
       // larger than 46 results in buffer.length = 0
       promises.push(master.readHoldingRegisters(addr, 0x106, 44, parseMulti(0x106, 44, [
@@ -117,7 +94,7 @@ function get_serial() {
       // promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('B相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // C相電壓2-31次諧波含有率 整數 readInt16BEArray
       // promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
-      result = await Promise.all(promises)
+      const result = await Promise.all(promises)
       logger.info(result)
       // 2019-04-26T20:46:16.266Z [+497ms] info: [ { 'AB線電壓': [ 393.96, 'V' ],
       //     'BC線電壓': [ 392.59, 'V' ],
@@ -192,7 +169,6 @@ function get_serial() {
 
       parse()
     })()
-
   } catch (e) {
     console.error('Error:', e.message)
     // return
@@ -200,25 +176,25 @@ function get_serial() {
   }
 })()
 
-function parse_fractions(buffer) {
+function parse_fractions (buffer) {
   return buffer.readUInt16BE() + buffer.readUInt16BE(2) / 65536
 }
 
-function parse_uint16(buffer) {
+function parse_uint16 (buffer) {
   return buffer.readUInt16BE()
 }
 
-function parse_float2(buffer) {
+function parse_float2 (buffer) {
   buffer.swap16()
   return [buffer.readFloatLE(), buffer.readFloatLE(4)]
 }
 
-function parse_uint32_4(buffer) {
-  //buffer.swap16()
+function parse_uint32_4 (buffer) {
+  // buffer.swap16()
   return [buffer.readUInt32BE(), buffer.readUInt32BE(4), buffer.readUInt32BE(8), buffer.readUInt32BE(12)]
 }
 
-function sniff16(buffer) {
+function sniff16 (buffer) {
   // return [buffer.toString('hex').toUpperCase(), buffer.readInt16LE(), buffer.readInt16BE()]
   return {
     hex: buffer.toString('hex').toUpperCase(),
@@ -227,7 +203,7 @@ function sniff16(buffer) {
   }
 }
 
-function sniff32(buffer) {
+function sniff32 (buffer) {
   const hex_str = buffer.toString('hex').toUpperCase()
   const intbe = buffer.readInt32BE()
   const floatbe = buffer.readFloatBE()
@@ -349,7 +325,7 @@ function parseMulti (start, total, regs) {
   }
 }
 
-function get_plc_settings() {
+function get_plc_settings () {
   return {
     name: 'Geo9',
     location: '宜蘭清水九號井',
@@ -517,4 +493,3 @@ function get_plc_settings() {
     ]
   }
 }
-

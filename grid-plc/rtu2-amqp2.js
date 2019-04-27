@@ -46,6 +46,8 @@ const argv = require('minimist')(process.argv.slice(2), {
 })
 
 const logger = require('../lib/logger')
+const getUuid = require('../lib/getUuid')
+const getSerial = require('../lib/getSerial')
 const os = require('os')
 // const config = require('config')
 // const util = require('util')
@@ -53,44 +55,6 @@ const os = require('os')
 const SerialPort = require('serialport')
 const modbus = require('modbus-rtu')
 const amqplib = require('amqplib')
-
-function getUuid () {
-  return new Promise((resolve, reject) => {
-    require('machine-uuid')(uuid => {
-      resolve(uuid)
-    })
-  })
-}
-
-function getSerial () {
-  return new Promise((resolve, reject) => {
-    // list available serial ports
-    SerialPort.list((err, ports) => {
-      if (err) {
-        console.error(err)
-        reject(err)
-      }
-      if (ports.length === 0) {
-        reject(Error('No serial ports found.'))
-      } else if (argv.serial === 'auto') {
-        if (ports.length === 1) {
-          resolve(ports[0].comName)
-        } else {
-          reject(
-            Error(
-              'Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' +
-                ports.map(port => port.comName).join(', ')
-            )
-          )
-        }
-      } else if (ports.map(port => port.comName).indexOf(argv.serial) !== -1) {
-        resolve(argv.serial)
-      } else {
-        reject(Error('Serial port "' + argv.serial + '" not found.'))
-      }
-    })
-  })
-}
 
 function getPlcSettings () {
   return {
@@ -169,7 +133,7 @@ function getPlcSettings () {
 // }
 
 // nhr3800
-function uint32_be_d100 (reg) {
+function uint32BeD100 (reg) {
   return buffer => {
     return {
       name: reg.name,
@@ -192,7 +156,7 @@ var RTU = {
                 rtu.addr,
                 reg.addr,
                 2,
-                uint32_be_d100(reg)
+                uint32BeD100(reg)
               )
             )
           ).catch(err => {
@@ -267,7 +231,7 @@ async function main () {
 
   // auto detect or try to use specified serial port
   try {
-    var serial = await getSerial()
+    var serial = await getSerial(argv)
     console.log('Serial port:', serial)
   } catch (e) {
     console.error('Error:', e.message)

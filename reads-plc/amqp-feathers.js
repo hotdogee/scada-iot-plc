@@ -29,42 +29,29 @@
 const config = require('config')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
-    default: {
-        'supervisor': config.get('supervisor.url'),
-        'ampqstr': 'amqp://localhost',
-    }
-});
+  default: {
+    'supervisor': config.get('supervisor.url'),
+    'ampqstr': 'amqp://localhost'
+  }
+})
 const feathers = require('feathers/client')
 const socketio = require('feathers-socketio/client')
 const hooks = require('feathers-hooks')
-const errors = require('feathers-errors') // An object with all of the custom error types.
+// const errors = require('feathers-errors') // An object with all of the custom error types.
 const auth = require('feathers-authentication-client')
 const io = require('socket.io-client')
-const { createLogger, format, transports } = require('winston')
-const logger = createLogger({
-  level: 'debug',
-  format: format.combine(
-    format.splat(),
-    format.timestamp(),
-    format.ms(),
-    format.simple()
-  ),
-  transports: [
-    new transports.Console()
-  ]
-})
-const util = require('util');
-const amqplib = require('amqplib');
+const logger = require('../lib/logger')
+const util = require('util')
+const amqplib = require('amqplib')
 const localStorage = require('node-persist')
 // setup localStorage
-localStorage.initSync();
+localStorage.initSync()
 localStorage.setItem = localStorage.setItemSync
 localStorage.getItem = localStorage.getItemSync
 
-
-const ioConfig = config.get('supervisor')
-const socket = io("https://scada.hanl.in", {
-  path: "/api/socket.io" // default: /socket.io
+// const ioConfig = config.get('supervisor')
+const socket = io('https://scada.hanl.in', {
+  path: '/api/socket.io' // default: /socket.io
 })
 
 const supervisor = feathers()
@@ -79,17 +66,17 @@ supervisor.on('reauthentication-error', err => {
   process.exit()
 })
 
-;(async function amqpFeathers() {
+;(async function amqpFeathers () {
   // console.log(localStorage.getItem('feathers-jwt'))
   // run login.js first to save jwt to localStorage
-  var access_token = await supervisor.authenticate({
+  var accessToken = await supervisor.authenticate({
     strategy: 'jwt',
     accessToken: localStorage.getItem('feathers-jwt')
   }).catch(err => {
     logger.error('supervisor.authenticate:', err)
     process.exit()
   })
-  logger.info(util.format('feathers authenticated: ', access_token))
+  logger.info(util.format('feathers authenticated: ', accessToken))
 
   // logs service
   const logs = supervisor.service('logs')
@@ -100,8 +87,8 @@ supervisor.on('reauthentication-error', err => {
   }
 
   // assert ampq reads exchange and bind to logger queue
-  var ex_reads = 'reads'
-  var q_feathers = 'feathers'
+  var exReads = 'reads'
+  var qFeathers = 'feathers'
 
   // connect to ampq server, connection is a ChannelModel object
   // 'amqp://localhost'
@@ -118,16 +105,18 @@ supervisor.on('reauthentication-error', err => {
   })
   logger.info(util.format('Channel created'))
 
-  var ok = await channel.assertExchange(ex_reads, 'fanout')
-  console.log('reads exchange:', ok) // { exchange: 'reads' }
-  var ok = await channel.assertQueue(q_feathers)
-  console.log('logger queue:', ok) // { queue: 'logger', messageCount: 0, consumerCount: 0 }
-  var ok = await channel.bindQueue(q_feathers, ex_reads, '') // {}
-  var ok = await channel.prefetch(1)
-  var ok = await channel.consume(q_feathers, function (msg) { // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
+  const ex = await channel.assertExchange(exReads, 'fanout')
+  logger.info('reads exchange:', ex) // { exchange: 'reads' }
+  const q = await channel.assertQueue(qFeathers)
+  logger.info('logger queue:', q) // { queue: 'logger', messageCount: 0, consumerCount: 0 }
+  const bq = await channel.bindQueue(qFeathers, exReads, '')
+  logger.info('bindQueue:', bq) // {}
+  const pf = await channel.prefetch(1)
+  logger.info('prefetch:', pf) // {}
+  const cs = await channel.consume(qFeathers, function (msg) { // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
     if (msg !== null) {
       logger.info(`Got message: ${msg.fields.deliveryTag}`)
-      //console.log(msg.content.toString());
+      // logger.info(msg.content.toString());
       // Traversal order of properties is fixed in ES6
       // http://exploringjs.com/es6/ch_oop-besides-classes.html#_traversal-order-of-properties
       let message = JSON.parse(msg.content.toString())
@@ -146,4 +135,5 @@ supervisor.on('reauthentication-error', err => {
       })
     }
   })
+  logger.info('consume:', cs) // {}
 })()
