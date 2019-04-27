@@ -88,35 +88,321 @@ function getPlcSettings () {
             max: 100
           }
         ]
+      },
+      {
+        name: '併接點',
+        type: 'nhr3500',
+        addr: 72,
+        cmds: [
+          {
+            code: 3,
+            start: 0x106,
+            len: 44,
+            regs: [
+              {
+                addr: 0x106,
+                name: 'AB線電壓',
+                factor: 100,
+                unit: 'V',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x108,
+                name: 'BC線電壓',
+                factor: 100,
+                unit: 'V',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x10A,
+                name: 'CA線電壓',
+                factor: 100,
+                unit: 'V',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x10C,
+                name: 'A相電流',
+                factor: 1000,
+                unit: 'A',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x10E,
+                name: 'B相電流',
+                factor: 1000,
+                unit: 'A',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x110,
+                name: 'C相電流',
+                factor: 1000,
+                unit: 'A',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x118,
+                name: '有功功率',
+                factor: 10,
+                unit: 'kW',
+                type: 'readFloatBE'
+              },
+              {
+                addr: 0x120,
+                name: '無功功率',
+                factor: 10,
+                unit: 'kvar',
+                type: 'readFloatBE'
+              },
+              {
+                addr: 0x128,
+                name: '視在功率',
+                factor: 10,
+                unit: 'kVA',
+                type: 'readFloatBE'
+              },
+              {
+                addr: 0x130,
+                name: '功率因數',
+                factor: 10,
+                unit: '%',
+                type: 'readInt32BE'
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x608,
+            len: 6,
+            regs: [
+              {
+                addr: 0x608,
+                name: '有功電量',
+                factor: 100,
+                unit: 'kWh',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x60A,
+                name: '無功電量',
+                factor: 100,
+                unit: 'kvarh',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x60C,
+                name: '視在電量',
+                factor: 100,
+                unit: 'kVAh',
+                type: 'readInt32BE'
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x1100,
+            len: 30,
+            regs: [
+              {
+                addr: 0x1100,
+                name: 'A相電流諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x1120,
+            len: 30,
+            regs: [
+              {
+                addr: 0x1120,
+                name: 'B相電流諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x1140,
+            len: 30,
+            regs: [
+              {
+                addr: 0x1140,
+                name: 'C相電流諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          }
+        ]
+      },
+      {
+        name: '發電機300kVA',
+        type: 'nhr3500',
+        addr: 73,
+        cmds: [
+          {
+            code: 3,
+            start: 0x106,
+            len: 44,
+            regs: [
+              {
+                addr: 0x106,
+                name: 'AB線電壓',
+                factor: 100,
+                unit: 'V',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x108,
+                name: 'BC線電壓',
+                factor: 100,
+                unit: 'V',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x10A,
+                name: 'CA線電壓',
+                factor: 100,
+                unit: 'V',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x10C,
+                name: 'A相電流',
+                factor: 1000,
+                unit: 'A',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x10E,
+                name: 'B相電流',
+                factor: 1000,
+                unit: 'A',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x110,
+                name: 'C相電流',
+                factor: 1000,
+                unit: 'A',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x118,
+                name: '有功功率',
+                factor: 10,
+                unit: 'kW',
+                type: 'readFloatBE'
+              },
+              {
+                addr: 0x120,
+                name: '無功功率',
+                factor: 10,
+                unit: 'kvar',
+                type: 'readFloatBE'
+              },
+              {
+                addr: 0x128,
+                name: '視在功率',
+                factor: 10,
+                unit: 'kVA',
+                type: 'readFloatBE'
+              },
+              {
+                addr: 0x130,
+                name: '功率因數',
+                factor: 10,
+                unit: '%',
+                type: 'readInt32BE'
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x608,
+            len: 6,
+            regs: [
+              {
+                addr: 0x608,
+                name: '有功電量',
+                factor: 100,
+                unit: 'kWh',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x60A,
+                name: '無功電量',
+                factor: 100,
+                unit: 'kvarh',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x60C,
+                name: '視在電量',
+                factor: 100,
+                unit: 'kVAh',
+                type: 'readInt32BE'
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x1100,
+            len: 30,
+            regs: [
+              {
+                addr: 0x1100,
+                name: 'A相電流諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x1120,
+            len: 30,
+            regs: [
+              {
+                addr: 0x1120,
+                name: 'B相電流諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x1140,
+            len: 30,
+            regs: [
+              {
+                addr: 0x1140,
+                name: 'C相電流諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          }
+        ]
       }
-      // {
-      //   name: '併接點',
-      //   type: 'nhr3500',
-      //   addr: 72,
-      //   fc03: [
-      //     {
-      //       addr: 256,
-      //       name: '頻率',
-      //       unit: 'Hz',
-      //       min: 0,
-      //       max: 100
-      //     }
-      //   ]
-      // },
-      // {
-      //   name: '發電機300kVA',
-      //   type: 'nhr3500',
-      //   addr: 73,
-      //   fc03: [
-      //     {
-      //       addr: 256,
-      //       name: '頻率',
-      //       unit: 'Hz',
-      //       min: 0,
-      //       max: 100
-      //     }
-      //   ]
-      // }
     ]
   }
 }
@@ -142,6 +428,11 @@ function uint32BeD100 (reg) {
       time: new Date().toJSON()
     }
   }
+}
+
+const fcNames = {
+  3: 'readHoldingRegisters',
+  4: 'readInputRegisters'
 }
 
 const RTU = {
@@ -177,6 +468,54 @@ const RTU = {
               name: rtu.name,
               addr: rtu.addr,
               reads: data
+            }
+            resolve(result)
+            break
+          }
+        }
+      })
+    }
+  },
+  nhr3500: {
+    read: (master, rtu) => {
+      return new Promise(async (resolve, reject) => {
+        const maxTries = 2
+        for (let tries = 0; tries < maxTries; tries++) {
+          const data = await Promise.all(
+            rtu.cmds.map(cmd => {
+              return master[fcNames[cmd.code]](rtu.addr, cmd.start, cmd.len, (buffer) => {
+                if (buffer.length < (cmd.len * 2)) {
+                  logger.debug(`buffer.length = ${buffer.length}`)
+                }
+                return cmd.regs.map(reg => {
+                  let res = null
+                  if (reg.len) {
+                    res = [...Array(reg.len).keys()].map(i => {
+                      return buffer[reg.type]((reg.addr - cmd.start + i) * 2) / reg.factor
+                    })
+                  } else {
+                    res = buffer[reg.type]((reg.addr - cmd.start) * 2) / reg.factor
+                  }
+                  return {
+                    name: reg.name,
+                    unit: reg.unit,
+                    value: res,
+                    time: new Date().toJSON()
+                  }
+                })
+              })
+            })
+          ).catch(err => {
+            if (tries + 1 === maxTries) {
+              logger.error('RTU.nhr3500.read', rtu.name, rtu.addr, err)
+              return []
+            }
+          })
+          if (data) {
+            const result = {
+              name: rtu.name,
+              addr: rtu.addr,
+              reads: flatten(data)
             }
             resolve(result)
             break
