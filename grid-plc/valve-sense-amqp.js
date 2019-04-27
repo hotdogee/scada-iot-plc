@@ -12,24 +12,33 @@
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    'wait': 500, // valve state changes can not happen more than one in 500ms
-    'amqpUrl': 'amqp://localhost'
+    wait: 500, // valve state changes can not happen more than one in 500ms
+    amqpUrl: 'amqp://localhost'
   }
 })
 const logger = require('../lib/logger')
 const amqplib = require('amqplib')
 const util = require('util')
-const imu = require("../nodeimu")
+const imu = require('../nodeimu')
 const IMU = new imu.IMU()
 
-const print_vector3 = function(name, data) {
-  const sx = data.x >= 0 ? ' ' : '';
-  const sy = data.y >= 0 ? ' ' : '';
-  const sz = data.z >= 0 ? ' ' : '';
-  return util.format('%s: %s%s %s%s %s%s ', name, sx, data.x.toFixed(4), sy, data.y.toFixed(4), sz, data.z.toFixed(4));
+const printVector3 = function (name, data) {
+  const sx = data.x >= 0 ? ' ' : ''
+  const sy = data.y >= 0 ? ' ' : ''
+  const sz = data.z >= 0 ? ' ' : ''
+  return util.format(
+    '%s: %s%s %s%s %s%s ',
+    name,
+    sx,
+    data.x.toFixed(4),
+    sy,
+    data.y.toFixed(4),
+    sz,
+    data.z.toFixed(4)
+  )
 }
 
-const ex_commands = 'commands'
+const exCommands = 'commands'
 const routingKey = 'shutoff_valve1'
 
 ;(async function () {
@@ -48,7 +57,9 @@ const routingKey = 'shutoff_valve1'
       process.exit()
     })
     logger.info('Channel created')
-    const ex = await channel.assertExchange(ex_commands, 'topic', {durable: false})
+    const ex = await channel.assertExchange(exCommands, 'topic', {
+      durable: false
+    })
     logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
     const msg = {
       shutoff_valve1: {
@@ -57,8 +68,8 @@ const routingKey = 'shutoff_valve1'
     }
     const callb = (err, data) => {
       if (err !== null) {
-        console.error("Could not read sensor data: ", err)
-        return;
+        console.error('Could not read sensor data: ', err)
+        return
       }
       // console.log("Accelleration is: ", JSON.stringify(data.accel, null, "  "));
       // console.log("Gyroscope is: ", JSON.stringify(data.gyro, null, "  "));
@@ -69,14 +80,28 @@ const routingKey = 'shutoff_valve1'
       // console.log("Pressure is: ", data.pressure);
       // console.log("Humidity is: ", data.humidity);
       if (data.humidity > 40) {
-        console.log(util.format('%s %s %s %s', print_vector3('Accel', data.accel), data.temperature.toFixed(4), data.pressure.toFixed(4), data.humidity.toFixed(4)))
-        channel.publish(ex_commands, routingKey, Buffer.from(JSON.stringify(msg)))
+        console.log(
+          util.format(
+            '%s %s %s %s',
+            printVector3('Accel', data.accel),
+            data.temperature.toFixed(4),
+            data.pressure.toFixed(4),
+            data.humidity.toFixed(4)
+          )
+        )
+        channel.publish(
+          exCommands,
+          routingKey,
+          Buffer.from(JSON.stringify(msg))
+        )
       }
-      setTimeout(function() { IMU.getValue(callb) }, 100)
+      setTimeout(function () {
+        IMU.getValue(callb)
+      }, 100)
     }
     IMU.getValue(callb)
   } catch (error) {
-    logger.error(e)
+    logger.error(error)
     process.exit()
   }
 })()

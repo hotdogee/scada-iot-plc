@@ -34,13 +34,13 @@ const Gpio = require('pigpio').Gpio
 
 const buttonNormalState = argv.buttonPull === 'up' ? 1 : 0
 const relayNormalState = argv.relayActive === 'low' ? 1 : 0
-const relayActiveState = +!relayNormalState
+// const relayActiveState = +!relayNormalState
 // state
 let valveState = relayNormalState
 let buttonState = buttonNormalState
 let valveLocked = false
 
-const relay = new Gpio(argv.relay, {mode: Gpio.OUTPUT})
+const relay = new Gpio(argv.relay, { mode: Gpio.OUTPUT })
 relay.digitalWrite(valveState)
 
 const button = new Gpio(argv.button, {
@@ -56,12 +56,12 @@ button.on('interrupt', (level) => {
   if (buttonState === buttonNormalState || valveLocked) return
   valveState = +!valveState
   valveLocked = true
-  setTimeout(() => valveLocked = false, argv.wait)
+  setTimeout(() => { valveLocked = false }, argv.wait)
   logger.info('valveState = %d', valveState)
   relay.digitalWrite(valveState)
 })
 
-const ex_commands = 'commands'
+const exCommands = 'commands'
 const routingKey = '#.shutoff_valve1'
 
 ;(async function () {
@@ -80,11 +80,11 @@ const routingKey = '#.shutoff_valve1'
       process.exit()
     })
     logger.info('Channel created')
-    const ex = await channel.assertExchange(ex_commands, 'topic', {durable: false})
+    const ex = await channel.assertExchange(exCommands, 'topic', { durable: false })
     logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
-    const q = await channel.assertQueue('', {exclusive: true})
+    const q = await channel.assertQueue('', { exclusive: true })
     logger.info('assertQueue: %s', q) // { queue: 'logger', messageCount: 0, consumerCount: 0 }
-    await channel.bindQueue(q.queue, ex_commands, routingKey) // {}
+    await channel.bindQueue(q.queue, exCommands, routingKey) // {}
     const tag = await channel.consume(q.queue, async function (msg) {
       if (msg !== null) {
         const message = JSON.parse(msg.content.toString())
@@ -92,17 +92,17 @@ const routingKey = '#.shutoff_valve1'
           if (valveState !== relayNormalState) {
             valveState = relayNormalState
             valveLocked = true
-            setTimeout(() => valveLocked = false, argv.wait)
+            setTimeout(() => { valveLocked = false }, argv.wait)
             logger.info('valveState = %d', valveState)
             relay.digitalWrite(valveState)
           }
         }
         logger.info('message: %s', JSON.stringify(message))
       }
-    }, {noAck: true})
+    }, { noAck: true })
     logger.info('consume: %s', tag) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
   } catch (error) {
-    logger.error(e)
+    logger.error(error)
     process.exit()
   }
 })()
