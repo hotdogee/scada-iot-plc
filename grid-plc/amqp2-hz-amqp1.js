@@ -54,6 +54,7 @@ const argv = require('minimist')(process.argv.slice(2), {
 // const modbus = require('modbus-rtu')
 const logger = require('../lib/logger')
 const os = require('os')
+const { findIndex } = require('lodash')
 const amqplib = require('amqplib')
 
 function getUuid () {
@@ -145,18 +146,28 @@ async function main () {
       async function (msg) {
         if (msg !== null) {
           const message = JSON.parse(msg.content.toString())
-          if (
-            message &&
-            message.reads &&
-            message.reads[0] &&
-            message.reads[0].reads &&
-            message.reads[0].reads[0] &&
-            message.reads[0].reads[0].value >= argv.threshold
-          ) {
+          const addr = 71
+          const i1 = findIndex(message.reads, { addr })
+          if (i1 === -1) {
+            logger.error(message, { label: `freq addr: ${addr} not found` })
+            return
+          }
+          const name = '頻率'
+          const i2 = findIndex(message.reads[i1].reads, { name })
+          if (i2 === -1) {
+            logger.error(message, { label: `freq name: ${name} not found` })
+            return
+          }
+          const value = message.reads[i1].reads[i2].value
+          if (!value) {
+            logger.error(message, { label: `invalid freq: ${value} Hz` })
+            return
+          }
+          if (value >= argv.threshold) {
             logger.warn(
-              'Freq > %dHz: %s Hz',
+              'freq > %dHz: %s Hz',
               argv.threshold,
-              JSON.stringify(message.reads[0].reads[0].value)
+              JSON.stringify(value)
             )
             const msg = {
               shutoff_valve1: {
@@ -169,7 +180,7 @@ async function main () {
               Buffer.from(JSON.stringify(msg))
             )
           } else {
-            logger.info(message, { label: 'message' })
+            logger.info(message, { label: `freq < ${argv.threshold}Hz: ${value} Hz` })
           }
         }
       },
