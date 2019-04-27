@@ -117,7 +117,7 @@ const RTU = {
             }
           })
           if (data) {
-            let result = {
+            const result = {
               name: rtu.name,
               addr: rtu.addr,
               reads: flatten(data)
