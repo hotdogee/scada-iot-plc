@@ -83,17 +83,17 @@ const argv = require('minimist')(process.argv.slice(2), {
       // C相電流2-31次諧波含有率 整數 readInt16BEArray
       promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readHarmonics('C相電流2-31次諧波含有率', 100, 30)).catch(console.error))
       // // AB線電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('AB線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      // promises.push(master.readHoldingRegisters(addr, 0x1160, 30, readInt16BEArray('AB線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // BC線電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('BC線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      // promises.push(master.readHoldingRegisters(addr, 0x1180, 30, readInt16BEArray('BC線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // CA線電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('CA線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      // promises.push(master.readHoldingRegisters(addr, 0x11A0, 30, readInt16BEArray('CA線電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // A相電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1100, 30, readInt16BEArray('A相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      // promises.push(master.readHoldingRegisters(addr, 0x11C0, 30, readInt16BEArray('A相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // B相電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1120, 30, readInt16BEArray('B相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      // promises.push(master.readHoldingRegisters(addr, 0x11E0, 30, readInt16BEArray('B相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       // // C相電壓2-31次諧波含有率 整數 readInt16BEArray
-      // promises.push(master.readHoldingRegisters(addr, 0x1140, 30, readInt16BEArray('C相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
+      // promises.push(master.readHoldingRegisters(addr, 0x1200, 30, readInt16BEArray('C相電壓2-31次諧波含有率', 100, 30)).catch(console.error))
       const result = await Promise.all(promises)
       logger.info(result)
       // 2019-04-26T20:46:16.266Z [+497ms] info: [ { 'AB線電壓': [ 393.96, 'V' ],

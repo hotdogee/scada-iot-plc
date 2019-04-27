@@ -244,6 +244,51 @@ function getPlcSettings () {
                 len: 30
               }
             ]
+          },
+          {
+            code: 3,
+            start: 0x11C0,
+            len: 30,
+            regs: [
+              {
+                addr: 0x11C0,
+                name: 'A相電壓諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x11E0,
+            len: 30,
+            regs: [
+              {
+                addr: 0x11E0,
+                name: 'B相電壓諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x1200,
+            len: 30,
+            regs: [
+              {
+                addr: 0x1200,
+                name: 'C相電壓諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
           }
         ]
       },
@@ -395,6 +440,51 @@ function getPlcSettings () {
               {
                 addr: 0x1140,
                 name: 'C相電流諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x11C0,
+            len: 30,
+            regs: [
+              {
+                addr: 0x11C0,
+                name: 'A相電壓諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x11E0,
+            len: 30,
+            regs: [
+              {
+                addr: 0x11E0,
+                name: 'B相電壓諧波比',
+                factor: 100,
+                unit: '%',
+                type: 'readInt16BE',
+                len: 30
+              }
+            ]
+          },
+          {
+            code: 3,
+            start: 0x1200,
+            len: 30,
+            regs: [
+              {
+                addr: 0x1200,
+                name: 'C相電壓諧波比',
                 factor: 100,
                 unit: '%',
                 type: 'readInt16BE',
