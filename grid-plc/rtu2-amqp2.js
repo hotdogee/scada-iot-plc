@@ -43,50 +43,50 @@ const config = require('config')
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
     'serial': 'auto',
-    'amqpUrl': 'amqp://localhost',
+    'amqpUrl': 'amqp://localhost'
   }
-});
+})
 
 const logger = require('../lib/logger')
-const os = require('os');
+const os = require('os')
 const util = require('util')
-const _ = require('lodash');
-const SerialPort = require('serialport');
-const modbus = require("modbus-rtu");
-const amqplib = require('amqplib');
+const _ = require('lodash')
+const SerialPort = require('serialport')
+const modbus = require('modbus-rtu')
+const amqplib = require('amqplib')
 
-function get_uuid() {
+function get_uuid () {
   return new Promise((resolve, reject) => {
-    require("machine-uuid")((uuid) => { resolve(uuid); });
-  });
+    require('machine-uuid')((uuid) => { resolve(uuid) })
+  })
 }
 
-function get_serial() {
+function get_serial () {
   return new Promise((resolve, reject) => {
     // list available serial ports
     SerialPort.list((err, ports) => {
       if (err) {
-        console.error(err);
-        reject(err);
+        console.error(err)
+        reject(err)
       }
       if (ports.length == 0) {
-        reject(Error('No serial ports found.'));
+        reject(Error('No serial ports found.'))
       } else if (argv.serial == 'auto') {
         if (ports.length == 1) {
-          resolve(ports[0].comName);
+          resolve(ports[0].comName)
         } else {
-          reject(Error('Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' + ports.map(port => port.comName).join(', ')));
+          reject(Error('Specify one of the follow serial ports with the --serial argument.\nAvailable Serial Ports: ' + ports.map(port => port.comName).join(', ')))
         }
       } else if (ports.map(port => port.comName).indexOf(argv.serial) != -1) {
-        resolve(argv.serial);
+        resolve(argv.serial)
       } else {
-        reject(Error('Serial port "' + argv.serial + '" not found.'));
+        reject(Error('Serial port "' + argv.serial + '" not found.'))
       }
-    });
-  });
+    })
+  })
 }
 
-function get_plc_settings() {
+function get_plc_settings () {
   return {
     name: 'Geo9',
     location: '宜蘭清水九號井',
@@ -152,24 +152,24 @@ function get_plc_settings() {
 }
 
 // NHR Series Meter
-function s16_float_le_2(buffer) {
+function s16_float_le_2 (buffer) {
   buffer.swap16()
   return [buffer.readFloatLE(), buffer.readFloatLE(4)]
 }
 
-function s16_float_le_1(buffer) {
+function s16_float_le_1 (buffer) {
   buffer.swap16()
   return [buffer.readFloatLE()]
 }
 
 // nhr3800
-function uint32_be_d100(reg) {
+function uint32_be_d100 (reg) {
   return buffer => {
     return {
       name: reg.name,
       unit: reg.unit,
       value: buffer.readUInt32BE() / 100,
-      time: (new Date).toJSON()
+      time: (new Date()).toJSON()
     }
   }
 }
@@ -179,17 +179,17 @@ var RTU = {
     read: (master, rtu) => {
       return new Promise(async (resolve, reject) => {
         let max = 2
-        for (let i=0; i<max; i++) {
+        for (let i = 0; i < max; i++) {
           let data = await Promise.all(rtu.fc03.map(reg =>
-          master.readHoldingRegisters(rtu.addr, reg.addr, 2, uint32_be_d100(reg)))).catch(err => {
-            if (i+1 == max) {
+            master.readHoldingRegisters(rtu.addr, reg.addr, 2, uint32_be_d100(reg)))).catch(err => {
+            if (i + 1 == max) {
               console.log('RTU.nhr3800.read', rtu.name, rtu.addr, err)
               return [
                 {
-                  "name": "頻率",
-                  "unit": "Hz",
-                  "value": -1,
-                  "time": (new Date).toJSON()
+                  'name': '頻率',
+                  'unit': 'Hz',
+                  'value': -1,
+                  'time': (new Date()).toJSON()
                 }
               ]
             }
@@ -212,13 +212,13 @@ var RTU = {
 const exchangeName = 'reads'
 const routingKey = 'geo9-pi3p2.grid.plc'
 
-async function main() {
+async function main () {
   // get machine uuid
-  const uuid = (await get_uuid()).replace(/-/g, '');
-  console.log('Machine UUID:', uuid);
+  const uuid = (await get_uuid()).replace(/-/g, '')
+  console.log('Machine UUID:', uuid)
 
-  const hostname = os.hostname();
-  console.log('Hostname:', hostname);
+  const hostname = os.hostname()
+  console.log('Hostname:', hostname)
 
   let channel = null
   // connect to ampq server
@@ -239,22 +239,22 @@ async function main() {
     logger.info('Channel created')
 
     // assert exchange
-    const ex = await channel.assertExchange(exchangeName, 'topic', {durable: false})
+    const ex = await channel.assertExchange(exchangeName, 'topic', { durable: false })
     logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
     // const ok = await channel.assertExchange(ex_reads, 'fanout');
     // console.log('reads exchange:', ok); // { exchange: 'reads' }
   } catch (e) {
-    console.error('Error:', e.message);
+    console.error('Error:', e.message)
     // return;
     process.exit()
   }
 
   // auto detect or try to use specified serial port
   try {
-    var serial = await get_serial();
-    console.log('Serial port:', serial);
+    var serial = await get_serial()
+    console.log('Serial port:', serial)
   } catch (e) {
-    console.error('Error:', e.message);
+    console.error('Error:', e.message)
     // return;
     process.exit()
   }
@@ -267,35 +267,35 @@ async function main() {
   }), {
     endPacketTimeout: 19,
     queueTimeout: 50,
-    responseTimeout: 250,
-    //debug: true
-  });
+    responseTimeout: 250
+    // debug: true
+  })
 
-  const ps = get_plc_settings();
-  let i = 1;
-  let t = 0;
-  async function read() {
-    console.time('read');
-    t++;
+  const ps = get_plc_settings()
+  let i = 1
+  let t = 0
+  async function read () {
+    console.time('read')
+    t++
     try {
-      let result = await Promise.all(ps.rtus.map(rtu => RTU[rtu.type].read(master, rtu)));
+      let result = await Promise.all(ps.rtus.map(rtu => RTU[rtu.type].read(master, rtu)))
       let msg = {
         name: ps.name,
-        logTime: (new Date).toJSON(),
+        logTime: (new Date()).toJSON(),
         reads: result
       }
-      console.log(JSON.stringify(msg, null, 1));
-      channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)));
+      console.log(JSON.stringify(msg, null, 1))
+      channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)))
       // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)), { persistent: true });
-      console.log(t, i++);
+      console.log(t, i++)
     } catch (e) {
-      console.error('Error:', e.message);
+      console.error('Error:', e.message)
     } finally {
-      console.timeEnd('read');
-      setImmediate(read);
+      console.timeEnd('read')
+      setImmediate(read)
     }
   }
-  read();
+  read()
 }
 
-main();
+main()
