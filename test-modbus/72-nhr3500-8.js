@@ -47,6 +47,25 @@ const argv = require('minimist')(process.argv.slice(2), {
       )
       logger.info(result)
       parse()
+      // 2019-04-27T14:25:27.746Z [+496ms] info: [ { name: '併接點',
+      //   addr: 72,
+      //   reads:
+      //   [ [ { name: 'AB線電壓', unit: 'V', value: 396.47, time: '2019-04-27T14:25:27.362Z' },
+      //       { name: 'BC線電壓', unit: 'V', value: 394.54, time: '2019-04-27T14:25:27.363Z' },
+      //       { name: 'CA線電壓', unit: 'V', value: 393.59, time: '2019-04-27T14:25:27.363Z' },
+      //       { name: 'A相電流', unit: 'A', value: 13.02, time: '2019-04-27T14:25:27.363Z' },
+      //       { name: 'B相電流', unit: 'A', value: 13.44, time: '2019-04-27T14:25:27.363Z' },
+      //       { name: 'C相電流', unit: 'A', value: 15, time: '2019-04-27T14:25:27.363Z' },
+      //       { name: '有功功率', unit: 'kW', value: 9444, time: '2019-04-27T14:25:27.363Z' },
+      //       { name: '無功功率', unit: 'kvar', value: 0, time: '2019-04-27T14:25:27.363Z' },
+      //       { name: '視在功率', unit: 'kVA', value: 9444, time: '2019-04-27T14:25:27.363Z' },
+      //       { name: '功率因數', unit: '%', value: 100, time: '2019-04-27T14:25:27.363Z' } ],
+      //     [ { name: '有功電量', unit: 'kWh', value: 1683.32, time: '2019-04-27T14:25:27.442Z' },
+      //       { name: '無功電量', unit: 'kvarh', value: 290.31, time: '2019-04-27T14:25:27.442Z' },
+      //       { name: '視在電量', unit: 'kVAh', value: 1816.72, time: '2019-04-27T14:25:27.442Z' } ],
+      //     [ { name: 'A相電流諧波比', unit: '%', value: [ 0.68, 0.57, 0.23, 0.46, 0, 0.12, 0.12, 0.12, 0, 0.35, 0, 0.23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], time: '2019-04-27T14:25:27.537Z' } ],
+      //     [ { name: 'B相電流諧波比', unit: '%', value: [ 0.92, 0.92, 0.46, 0.24, 0.24, 0.24, 0.12, 0, 0, 0.35, 0, 0.12, 0, 0, 0, 0.12, 0, 0, 0, 0, 0, 0.12, 0, 0, 0, 0, 0, 0, 0, 0 ], time: '2019-04-27T14:25:27.640Z' } ],
+      //     [ { name: 'C相電流諧波比', unit: '%', value: [ 0.44, 2.13, 0.12, 0, 0, 0.23, 0, 0.23, 0.12, 0.23, 0, 0.12, 0, 0, 0, 0.12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], time: '2019-04-27T14:25:27.745Z' } ] ] } ]
     })()
   } catch (e) {
     console.error('Error:', e.message)
@@ -67,8 +86,8 @@ const RTU = {
         const maxTries = 2
         for (let tries = 0; tries < maxTries; tries++) {
           const data = await Promise.all(
-            rtu.cmds.map(cmd => {
-              return master[fcNames[cmd.code]](rtu.addr, cmd.start, cmd.len, (buffer) => {
+            rtu.cmds.reduce((acc, cmd) => {
+              return acc.concat(master[fcNames[cmd.code]](rtu.addr, cmd.start, cmd.len, (buffer) => {
                 if (buffer.length < (cmd.len * 2)) {
                   logger.debug(`buffer.length = ${buffer.length}`)
                 }
@@ -88,8 +107,8 @@ const RTU = {
                     time: new Date().toJSON()
                   }
                 })
-              })
-            })
+              }))
+            }, [])
           ).catch(err => {
             if (tries + 1 === maxTries) {
               logger.error('RTU.nhr3500.read', rtu.name, rtu.addr, err)
