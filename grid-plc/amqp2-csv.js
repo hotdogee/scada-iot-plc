@@ -589,6 +589,7 @@ async function amqpCsv () {
 
   let fileH = null
   let fileHeader = null
+  let rowCount = 0
   // logger.info('2', file, file_path)
   const cs = await channel.consume(queueName, async (msg) => {
     // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
@@ -628,7 +629,7 @@ async function amqpCsv () {
         const filePath = await getFilePath()
         ensureDirectoryExistence(path.dirname(filePath))
         fileH = fs.openSync(filePath, 'a')
-        logger.info(`Created new file: ${filePath}`, { label: 'file' })
+        logger.info(`Created new file: ${filePath}`, { label: `file-${fileH}` })
         // console.log(file, file_path)
         // return [file, file_path]
         // console.log('b')
@@ -636,9 +637,11 @@ async function amqpCsv () {
         // write header line if we got a empty file
         fs.writeSync(fileH, '\ufeff' + header + '\n') // utf8 bom
         fileHeader = header
-        logger.info(header, { label: 'header' })
+        logger.info(header, { label: `file-${fileH}-header` })
+        rowCount = 0
       }
-      logger.info(row, { label: `row-${fileH}` })
+      rowCount += 1
+      logger.info(row, { label: `file-${fileH}-row-${rowCount}` })
       fs.writeSync(fileH, row + '\n')
       fs.fsyncSync(fileH) // flush to disk
       // acknowledge message sucessfully processed
