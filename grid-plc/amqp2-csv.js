@@ -548,11 +548,11 @@ async function amqpCsv () {
 
   // connect to ampq server, connection is a ChannelModel object
   // 'amqp://localhost'
-  const connection = await amqplib.connect(argv.ampqstr).catch(err => {
+  const connection = await amqplib.connect(argv.amqpUrl).catch(err => {
     logger.error(err, { label: 'connect' })
     process.exit()
   })
-  logger.info(`${argv.ampqstr} connected`, { label: 'connect' })
+  logger.info(`${argv.amqpUrl} connected`, { label: 'connect' })
 
   // channel is a Channel object
   const channel = await connection.createChannel().catch(err => {
@@ -561,7 +561,14 @@ async function amqpCsv () {
   })
   logger.info('Channel created', { label: 'createChannel' })
 
-  const ex = await channel.assertExchange(exReads, 'fanout')
+  // To ensure that messages do survive server restarts, the message needs to:
+  // Be declared as persistent message,
+  // Be published into a durable exchange,
+  // Be queued into a durable queue
+  // assert exchange
+  const ex = await channel.assertExchange(exchangeName, 'topic', {
+    durable: true
+  })
   logger.info(ex, { label: 'assertExchange' }) // { exchange: 'reads' }
   const q = await channel.assertQueue(qLogger)
   logger.info(q, { label: 'assertQueue' }) // { queue: 'logger', messageCount: 0, consumerCount: 0 }

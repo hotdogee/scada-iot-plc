@@ -118,17 +118,17 @@ async function main () {
     // connect to ampq server, connection is a ChannelModel object
     // 'amqp://localhost'
     const connection2 = await amqplib.connect(argv.amqp2Url).catch(err => {
-      logger.error('amqplib.connect: %s', err)
+      logger.error(err, { label: 'connect' })
       process.exit()
     })
-    logger.info('%s connected 2', argv.amqp2Url)
+    logger.info(`${argv.amqp2Url} connected`, { label: 'connect' })
 
     // channel is a Channel object
     const channel2 = await connection2.createChannel().catch(err => {
-      logger.error('connection.createChannel: %s', err)
+      logger.error(err, { label: 'createChannel' })
       process.exit()
     })
-    logger.info('Channel2 created')
+    logger.info('Channel2 created', { label: 'createChannel' })
 
     // To ensure that messages do survive server restarts, the message needs to:
     // Be declared as persistent message,
@@ -138,7 +138,7 @@ async function main () {
     const ex2 = await channel2.assertExchange(exchangeName2, 'topic', {
       durable: true
     })
-    logger.info('assertExchange: %s', JSON.stringify(ex2)) // { exchange: 'reads' }
+    logger.info(ex2, { label: 'assertExchange' }) // { exchange: 'reads' }
     // const ok = await channel.assertExchange(ex_reads, 'fanout');
     // console.log('reads exchange:', ok); // { exchange: 'reads' }
     // Exclusive (used by only one connection and the queue will be deleted

@@ -641,17 +641,17 @@ async function main () {
     // connect to ampq server, connection is a ChannelModel object
     // 'amqp://localhost'
     const connection = await amqplib.connect(argv.amqpUrl).catch(err => {
-      logger.error('amqplib.connect: %s', err)
+      logger.error(err, { label: 'connect' })
       process.exit()
     })
-    logger.info('%s connected', argv.amqpUrl)
+    logger.info(`${argv.amqpUrl} connected`, { label: 'connect' })
 
     // channel is a Channel object
     channel = await connection.createChannel().catch(err => {
-      logger.error('connection.createChannel: %s', err)
+      logger.error(err, { label: 'createChannel' })
       process.exit()
     })
-    logger.info('Channel created')
+    logger.info('Channel created', { label: 'createChannel' })
 
     // To ensure that messages do survive server restarts, the message needs to:
     // Be declared as persistent message,
@@ -661,7 +661,7 @@ async function main () {
     const ex = await channel.assertExchange(exchangeName, 'topic', {
       durable: true
     })
-    logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
+    logger.info(ex, { label: 'assertExchange' }) // { exchange: 'reads' }
     // const ok = await channel.assertExchange(ex_reads, 'fanout');
     // logger.info('reads exchange:', ok); // { exchange: 'reads' }
   } catch (e) {
@@ -714,7 +714,8 @@ async function main () {
       channel.publish(
         exchangeName,
         routingKey,
-        Buffer.from(JSON.stringify(msg))
+        Buffer.from(JSON.stringify(msg)),
+        { persistent: true }
       )
       // channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(msg)), { persistent: true });
       logger.info({
