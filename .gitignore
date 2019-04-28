@@ -140,3 +140,5 @@ log
 
 # node-persist
 .node-persist
+errorlogs/*
+!/**/.gitkeep
