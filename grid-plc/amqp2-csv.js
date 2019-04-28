@@ -595,57 +595,63 @@ async function amqpCsv () {
     // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
     // let file, file_path, file_header;
     // console.log('1', file_h, file_path, file_header)
-    if (msg !== null) {
-      // let file, file_path, file_header;
-      // console.log('2', file_h, file_path, file_header)
-      // console.log(msg.content.toString());
-      // Traversal order of properties is fixed in ES6
-      // http://exploringjs.com/es6/ch_oop-besides-classes.html#_traversal-order-of-properties
-      const message = JSON.parse(msg.content.toString())
-      const [header, row] = parse(flattenMessage(message)).split(os.EOL)
-      // console.log('2.5', file_h, file_path, file_header)
-      // check file size
-      let fileFull = false
-      if (fileH) {
-        const fileSize = fs.fstatSync(fileH).size
-        if (fileSize >= fileMax) {
-          // create a new file if file size > file_max
-          fileFull = true
-          logger.info('Log file full, creating new file...', { label: 'file' })
-        }
-      }
-      let headerChanged = false
-      if (header !== fileHeader) {
-        headerChanged = true
-        logger.info('Header has changed, creating new file...', { label: 'file' })
-      }
-      if (fileFull || headerChanged) {
-        // console.log('3', file_h, file_path, file_header)
+    try {
+      if (msg !== null) {
+        // let file, file_path, file_header;
+        // console.log('2', file_h, file_path, file_header)
+        // console.log(msg.content.toString());
+        // Traversal order of properties is fixed in ES6
+        // http://exploringjs.com/es6/ch_oop-besides-classes.html#_traversal-order-of-properties
+        const message = JSON.parse(msg.content.toString())
+        const [header, row] = parse(flattenMessage(message)).split(os.EOL)
+        // console.log('2.5', file_h, file_path, file_header)
+        // check file size
+        let fileFull = false
         if (fileH) {
-          fs.closeSync(fileH)
+          const fileSize = fs.fstatSync(fileH).size
+          if (fileSize >= fileMax) {
+            // create a new file if file size > file_max
+            fileFull = true
+            logger.info('Log file full, creating new file...', { label: 'file' })
+          }
         }
-        // console.log('a', file_h, file_path)
-        deleteOldFiles()
-        const filePath = await getFilePath()
-        ensureDirectoryExistence(path.dirname(filePath))
-        fileH = fs.openSync(filePath, 'a')
-        logger.info(`Created new file: ${filePath}`, { label: `file-${fileH}` })
-        // console.log(file, file_path)
-        // return [file, file_path]
-        // console.log('b')
-        // console.log('c', file_h, file_path)
-        // write header line if we got a empty file
-        fs.writeSync(fileH, '\ufeff' + header + '\n') // utf8 bom
-        fileHeader = header
-        logger.info(header, { label: `file-${fileH}-header` })
-        rowCount = 0
+        let headerChanged = false
+        if (header !== fileHeader) {
+          headerChanged = true
+          logger.info('Header has changed, creating new file...', { label: 'file' })
+        }
+        if (fileFull || headerChanged) {
+          // console.log('3', file_h, file_path, file_header)
+          if (fileH) {
+            fs.closeSync(fileH)
+          }
+          // console.log('a', file_h, file_path)
+          deleteOldFiles()
+          const filePath = await getFilePath()
+          ensureDirectoryExistence(path.dirname(filePath))
+          fileH = fs.openSync(filePath, 'a')
+          logger.info(`Created new file: ${filePath}`, { label: `file-${fileH}` })
+          // console.log(file, file_path)
+          // return [file, file_path]
+          // console.log('b')
+          // console.log('c', file_h, file_path)
+          // write header line if we got a empty file
+          fs.writeSync(fileH, '\ufeff' + header + '\n') // utf8 bom
+          fileHeader = header
+          logger.info(header, { label: `file-${fileH}-header` })
+          rowCount = 0
+        }
+        rowCount += 1
+        logger.info(row, { label: `file-${fileH}-row-${rowCount}` })
+        fs.writeSync(fileH, row + '\n')
+        fs.fsyncSync(fileH) // flush to disk
+        // acknowledge message sucessfully processed
       }
-      rowCount += 1
-      logger.info(row, { label: `file-${fileH}-row-${rowCount}` })
-      fs.writeSync(fileH, row + '\n')
-      fs.fsyncSync(fileH) // flush to disk
-      // acknowledge message sucessfully processed
       channel.ack(msg)
+    } catch (error) {
+      logger.error(error)
+      // requeue the message
+      channel.nack(msg)
     }
   })
   logger.info(cs, { label: 'consume' }) // {}
