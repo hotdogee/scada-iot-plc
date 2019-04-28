@@ -1,4 +1,4 @@
-// node reads-plc/amqp-csv.js
+// node grid-plc/amqp2-csv.js
 
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
@@ -565,6 +565,9 @@ async function amqpCsv () {
   // assert exchange
   const ex = await channel.assertExchange(exchangeName, 'topic', {
     durable: true
+  }).catch(err => {
+    logger.error(err, { label: 'assertExchange' })
+    process.exit()
   })
   logger.info(ex, { label: 'assertExchange' }) // { exchange: 'reads' }
 
