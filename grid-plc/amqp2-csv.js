@@ -549,14 +549,14 @@ async function amqpCsv () {
     logger.error(err, { label: 'connect' })
     process.exit()
   })
-  logger.info(`${argv.amqpUrl} connected`, { label: 'connect' })
+  logger.info(connection, `${argv.amqpUrl} connected`, { label: 'connect' })
 
   // channel is a Channel object
   const channel = await connection.createChannel().catch(err => {
     logger.error(err, { label: 'createChannel' })
     process.exit()
   })
-  logger.info('Channel created', { label: 'createChannel' })
+  logger.info(channel, 'Channel created', { label: 'createChannel' })
 
   // To ensure that messages do survive server restarts, the message needs to:
   // Be declared as persistent message,
