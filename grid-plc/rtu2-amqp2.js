@@ -653,9 +653,13 @@ async function main () {
     })
     logger.info('Channel created')
 
+    // To ensure that messages do survive server restarts, the message needs to:
+    // Be declared as persistent message,
+    // Be published into a durable exchange,
+    // Be queued into a durable queue
     // assert exchange
     const ex = await channel.assertExchange(exchangeName, 'topic', {
-      durable: false
+      durable: true
     })
     logger.info('assertExchange: %s', ex) // { exchange: 'reads' }
     // const ok = await channel.assertExchange(ex_reads, 'fanout');

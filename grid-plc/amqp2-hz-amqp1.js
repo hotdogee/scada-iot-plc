@@ -130,13 +130,19 @@ async function main () {
     })
     logger.info('Channel2 created')
 
+    // To ensure that messages do survive server restarts, the message needs to:
+    // Be declared as persistent message,
+    // Be published into a durable exchange,
+    // Be queued into a durable queue
     // assert exchange
     const ex2 = await channel2.assertExchange(exchangeName2, 'topic', {
-      durable: false
+      durable: true
     })
     logger.info('assertExchange: %s', JSON.stringify(ex2)) // { exchange: 'reads' }
     // const ok = await channel.assertExchange(ex_reads, 'fanout');
     // console.log('reads exchange:', ok); // { exchange: 'reads' }
+    // Exclusive (used by only one connection and the queue will be deleted
+    // when that connection closes)
     const q2 = await channel2.assertQueue('', { exclusive: true })
     logger.info('assertQueue: %s', JSON.stringify(q2)) // { queue: 'logger', messageCount: 0,
     const ok = await channel2.bindQueue(q2.queue, exchangeName2, routingKey2) // {}
@@ -184,6 +190,10 @@ async function main () {
           }
         }
       },
+      // noAck (boolean): if true, the broker won’t expect an acknowledgement of
+      // messages delivered to this consumer; i.e., it will dequeue messages as
+      // soon as they’ve been sent down the wire. Defaults to false (i.e., you
+      // will be expected to acknowledge messages).
       { noAck: true }
     )
     logger.info('consume: %s', JSON.stringify(tag2)) // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
