@@ -535,6 +535,7 @@ function deleteOldFiles () {
 
 const exchangeName = 'reads'
 const routingKey = 'geo9-pi3p2.grid.plc'
+const queueName = 'logger'
 
 // To ensure that messages do survive server restarts, the message needs to:
 // Be declared as persistent message,
@@ -542,10 +543,6 @@ const routingKey = 'geo9-pi3p2.grid.plc'
 // Be queued into a durable queue
 
 async function amqpCsv () {
-  // assert ampq reads exchange and bind to logger queue
-  const exReads = 'reads'
-  const qLogger = 'logger'
-
   // connect to ampq server, connection is a ChannelModel object
   // 'amqp://localhost'
   const connection = await amqplib.connect(argv.amqpUrl).catch(err => {
@@ -570,14 +567,25 @@ async function amqpCsv () {
     durable: true
   })
   logger.info(ex, { label: 'assertExchange' }) // { exchange: 'reads' }
-  const q = await channel.assertQueue(qLogger)
-  logger.info(q, { label: 'assertQueue' }) // { queue: 'logger', messageCount: 0, consumerCount: 0 }
-  const bq = await channel.bindQueue(qLogger, exReads, '')
+
+  // assert a durable queue
+  const q = await channel.assertQueue(queueName, {
+    durable: true
+  })
+  // { queue: 'logger', messageCount: 0, consumerCount: 0 }
+  logger.info(q, { label: 'assertQueue' })
+
+  // prefetch 1
+  channel.prefetch(1)
+
+  // Assert a routing path from an exchange to a queue
+  const bq = await channel.bindQueue(queueName, exchangeName, routingKey)
   logger.info(bq, { label: 'bindQueue' }) // {}
+
   let fileH = null
   let fileHeader = null
   // logger.info('2', file, file_path)
-  const cs = await channel.consume(qLogger, async (msg) => {
+  const cs = await channel.consume(queueName, async (msg) => {
     // { consumerTag: 'amq.ctag-f-KUGP6js31pjKFX90lCvg' }
     // let file, file_path, file_header;
     // console.log('1', file_h, file_path, file_header)

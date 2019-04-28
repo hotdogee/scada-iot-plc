@@ -139,12 +139,17 @@ async function main () {
       durable: true
     })
     logger.info(ex2, { label: 'assertExchange' }) // { exchange: 'reads' }
+
     // const ok = await channel.assertExchange(ex_reads, 'fanout');
     // console.log('reads exchange:', ok); // { exchange: 'reads' }
     // Exclusive (used by only one connection and the queue will be deleted
     // when that connection closes)
+    // assert a exclusive queue
     const q2 = await channel2.assertQueue('', { exclusive: true })
-    logger.info('assertQueue: %s', JSON.stringify(q2)) // { queue: 'logger', messageCount: 0,
+    // { queue: 'logger', messageCount: 0,
+    logger.info(q2, { label: 'assertQueue' })
+
+    // Assert a routing path from an exchange to a queue
     const ok = await channel2.bindQueue(q2.queue, exchangeName2, routingKey2) // {}
     logger.info('bindQueue: %s', JSON.stringify(ok)) // { queue: 'logger', messageCount: 0,
     const tag2 = await channel2.consume(
