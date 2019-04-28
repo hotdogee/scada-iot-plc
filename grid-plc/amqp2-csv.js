@@ -549,27 +549,29 @@ async function amqpCsv () {
     logger.error(err, { label: 'connect' })
     process.exit()
   })
-  logger.info(connection, `${argv.amqpUrl} connected`, { label: 'connect' })
+  logger.info(`${argv.amqpUrl} connected`, { label: 'connect' })
 
   // channel is a Channel object
   const channel = await connection.createChannel().catch(err => {
     logger.error(err, { label: 'createChannel' })
     process.exit()
   })
-  logger.info(channel, 'Channel created', { label: 'createChannel' })
+  logger.info('Channel created', { label: 'createChannel' })
 
   // To ensure that messages do survive server restarts, the message needs to:
   // Be declared as persistent message,
   // Be published into a durable exchange,
   // Be queued into a durable queue
   // assert exchange
-  const ex = await channel.assertExchange(exchangeName, 'topic', {
-    durable: true
-  }).catch(err => {
-    logger.error(err, { label: 'assertExchange' })
+  try {
+    const ex = await channel.assertExchange(exchangeName, 'topic', {
+      durable: true
+    })
+    logger.info(ex, { label: 'assertExchange' }) // { exchange: 'reads' }
+  } catch (error) {
+    logger.error(error, { label: 'assertExchange' })
     process.exit()
-  })
-  logger.info(ex, { label: 'assertExchange' }) // { exchange: 'reads' }
+  }
 
   // assert a durable queue
   const q = await channel.assertQueue(queueName, {
