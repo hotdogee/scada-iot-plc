@@ -551,14 +551,7 @@ const RTU = {
           ).catch(err => {
             if (i + 1 === max) {
               logger.error('RTU.nhr3800.read', rtu.name, rtu.addr, err)
-              return [
-                {
-                  name: '頻率',
-                  unit: 'Hz',
-                  value: -1,
-                  time: new Date().toJSON()
-                }
-              ]
+              reject(err)
             }
           })
           if (data) {
@@ -606,7 +599,7 @@ const RTU = {
           ).catch(err => {
             if (tries + 1 === maxTries) {
               logger.error('RTU.nhr3500.read', rtu.name, rtu.addr, err)
-              return []
+              reject(err)
             }
           })
           if (data) {
@@ -723,7 +716,7 @@ async function main () {
         success: i++
       }, { label: 'count' })
     } catch (e) {
-      logger.error('Error:', e.message)
+      logger.error(e)
     } finally {
       console.timeEnd('read')
       setImmediate(read)
