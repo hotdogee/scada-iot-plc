@@ -174,7 +174,7 @@ function getPlcSettings () {
                 addr: 0x132,
                 name: '頻率',
                 factor: 1000,
-                unit: '%',
+                unit: 'Hz',
                 type: 'readInt32BE'
               }
             ]
