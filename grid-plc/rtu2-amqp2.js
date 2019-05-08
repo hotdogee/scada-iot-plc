@@ -146,21 +146,21 @@ function getPlcSettings () {
                 addr: 0x118,
                 name: '有功功率',
                 factor: 10,
-                unit: 'kW',
+                unit: 'W',
                 type: 'readFloatBE'
               },
               {
                 addr: 0x120,
                 name: '無功功率',
                 factor: 10,
-                unit: 'kvar',
+                unit: 'var',
                 type: 'readFloatBE'
               },
               {
                 addr: 0x128,
                 name: '視在功率',
                 factor: 10,
-                unit: 'kVA',
+                unit: 'VA',
                 type: 'readFloatBE'
               },
               {
@@ -355,21 +355,21 @@ function getPlcSettings () {
                 addr: 0x118,
                 name: '有功功率',
                 factor: 10,
-                unit: 'kW',
+                unit: 'W',
                 type: 'readFloatBE'
               },
               {
                 addr: 0x120,
                 name: '無功功率',
                 factor: 10,
-                unit: 'kvar',
+                unit: 'var',
                 type: 'readFloatBE'
               },
               {
                 addr: 0x128,
                 name: '視在功率',
                 factor: 10,
-                unit: 'kVA',
+                unit: 'VA',
                 type: 'readFloatBE'
               },
               {
