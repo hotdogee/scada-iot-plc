@@ -55,7 +55,7 @@ const socket = io('https://scada.hanl.in', {
 })
 
 const supervisor = feathers()
-  .configure(socketio(socket, { timeout: 10000 }))
+  .configure(socketio(socket, { timeout: 2000 }))
   .configure(hooks())
   .configure(auth({
     storage: localStorage
