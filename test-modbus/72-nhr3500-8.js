@@ -224,6 +224,34 @@ function getPlcSettings () {
             len: 6,
             regs: [
               {
+                addr: 0x600,
+                name: '正有功電量',
+                factor: 100,
+                unit: 'kWh',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x602,
+                name: '負有功電量',
+                factor: 100,
+                unit: 'kWh',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x604,
+                name: '正無功電量',
+                factor: 100,
+                unit: 'kvarh',
+                type: 'readInt32BE'
+              },
+              {
+                addr: 0x606,
+                name: '負無功電量',
+                factor: 100,
+                unit: 'kvarh',
+                type: 'readInt32BE'
+              },
+              {
                 addr: 0x608,
                 name: '有功電量',
                 factor: 100,
