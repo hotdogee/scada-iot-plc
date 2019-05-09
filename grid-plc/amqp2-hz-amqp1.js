@@ -154,32 +154,32 @@ async function main () {
     logger.info('bindQueue: %s', JSON.stringify(ok)) // { queue: 'logger', messageCount: 0,
     const tag2 = await channel2.consume(
       q2.queue,
-      async function (msg) {
+      function (msg) {
         if (msg !== null) {
           const message = JSON.parse(msg.content.toString())
           const addr = 71
           const i1 = findIndex(message.reads, { addr })
           if (i1 === -1) {
-            logger.error(message, { label: `freq addr: ${addr} not found` })
+            logger.error('NO RTU', { label: `freq addr: ${addr} not found` })
+            // logger.error(message, { label: `freq addr: ${addr} not found` })
             return
           }
           const name = '頻率'
           const i2 = findIndex(message.reads[i1].reads, { name })
           if (i2 === -1) {
-            logger.error(message, { label: `freq name: ${name} not found` })
+            logger.error('NO REG', { label: `freq name: ${name} not found` })
+            // logger.error(message, { label: `freq name: ${name} not found` })
             return
           }
           const value = message.reads[i1].reads[i2].value
-          if (!value) {
-            logger.error(message, { label: `invalid freq: ${value} Hz` })
+          if (!value && value !== 0) {
+            logger.error('NO FREQUENCY VALUE', { label: `invalid freq: ${value} Hz` })
+            // logger.error(message, { label: `invalid freq: ${value} Hz` })
             return
           }
           if (value >= argv.threshold) {
-            logger.warn(
-              'freq > %dHz: %s Hz',
-              argv.threshold,
-              JSON.stringify(value)
-            )
+            logger.info('OVER FREQUENCY', { label: `freq < ${argv.threshold}Hz: ${value} Hz` })
+            // logger.info(message, { label: `freq > ${argv.threshold}Hz: ${value} Hz` })
             const msg = {
               shutoff_valve1: {
                 state: 0
@@ -191,7 +191,8 @@ async function main () {
               Buffer.from(JSON.stringify(msg))
             )
           } else {
-            logger.info(message, { label: `freq < ${argv.threshold}Hz: ${value} Hz` })
+            logger.info('SAFE', { label: `freq < ${argv.threshold}Hz: ${value} Hz` })
+            // logger.info(message, { label: `freq < ${argv.threshold}Hz: ${value} Hz` })
           }
         }
       },
