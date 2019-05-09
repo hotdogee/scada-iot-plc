@@ -181,8 +181,8 @@ function getPlcSettings () {
           },
           {
             code: 3,
-            start: 0x608,
-            len: 6,
+            start: 0x600,
+            len: 14,
             regs: [
               {
                 addr: 0x600,
@@ -411,8 +411,8 @@ function getPlcSettings () {
           },
           {
             code: 3,
-            start: 0x608,
-            len: 6,
+            start: 0x600,
+            len: 14,
             regs: [
               {
                 addr: 0x600,
