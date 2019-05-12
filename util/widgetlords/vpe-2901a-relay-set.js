@@ -1,6 +1,6 @@
 // examples
 // sudo node util/widgetlords/vpe-2901a-relay-set.js
-// sudo node util/widgetlords/vpe-2901a-relay-set.js --relay 5 --relayActive low --energize 1
+// sudo node util/widgetlords/vpe-2901a-relay-set.js --relay 5 --relayActive high --energize 1
 
 // vpe-2901a PI-SPI-DIN-2x4MIO
 // relays are high active
