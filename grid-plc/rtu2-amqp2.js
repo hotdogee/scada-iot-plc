@@ -773,11 +773,10 @@ async function main () {
       }, { label: 'count' })
     } catch (e) {
       logger.error({
-        code: e.code,
-        message: e
+        error: e
       }, { label: 'read' })
       // error 'Response timeout of 250ms exceed!'
-      if (!e.message.startsWith('Response timeout')) {
+      if (e.name !== 'ModbusResponseTimeout') {
         process.exit()
       }
     } finally {
