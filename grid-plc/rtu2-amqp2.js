@@ -773,6 +773,7 @@ async function main () {
       }, { label: 'count' })
     } catch (e) {
       logger.error(e)
+      process.exit()
     } finally {
       console.timeEnd('read')
       setImmediate(read)
