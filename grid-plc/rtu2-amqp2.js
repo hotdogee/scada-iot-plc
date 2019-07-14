@@ -772,7 +772,10 @@ async function main () {
         success: i++
       }, { label: 'count' })
     } catch (e) {
-      logger.error(e.code, e)
+      logger.error({
+        code: e.code,
+        message: e
+      }, { label: 'read' })
       // error 'Response timeout of 250ms exceed!'
       if (!e.message.startsWith('Response timeout')) {
         process.exit()
