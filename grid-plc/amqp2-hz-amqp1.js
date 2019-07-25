@@ -41,7 +41,7 @@ require('dotenv').config()
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    threshold: 55,
+    threshold: 65,
     amqp1Url: process.env.AMQP1URL,
     amqp2Url: process.env.AMQP2URL || 'amqp://localhost'
   }
@@ -65,10 +65,14 @@ function getUuid () {
   })
 }
 
+// const addr = 71
+const addr = 70
 const exchangeName1 = 'commands'
 const routingKey1 = '#.shutoff_valve1'
-const exchangeName2 = 'reads'
-const routingKey2 = 'geo9-pi3p2.grid.plc'
+// const exchangeName2 = 'reads'
+// const routingKey2 = 'geo9-pi3p2.grid.plc'
+const exchangeName2 = 'frequency'
+const routingKey2 = 'rtu3.grid.plc'
 
 async function main () {
   // get machine uuid
@@ -136,7 +140,7 @@ async function main () {
     // Be queued into a durable queue
     // assert exchange
     const ex2 = await channel2.assertExchange(exchangeName2, 'topic', {
-      durable: true
+      durable: false
     })
     logger.info(ex2, { label: 'assertExchange' }) // { exchange: 'reads' }
 
@@ -157,7 +161,6 @@ async function main () {
       function (msg) {
         if (msg !== null) {
           const message = JSON.parse(msg.content.toString())
-          const addr = 71
           const i1 = findIndex(message.reads, { addr })
           if (i1 === -1) {
             logger.error('NO RTU', { label: `freq addr: ${addr} not found` })

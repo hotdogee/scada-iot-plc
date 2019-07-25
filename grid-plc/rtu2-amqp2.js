@@ -1,4 +1,4 @@
-// node rtu-amqp.js --serial=auto --ampqstr=amqp://localhost
+// node rtu2-amqp.js --serial=auto --ampqstr=amqp://localhost
 //
 // Serial
 // - Auto detect
