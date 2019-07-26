@@ -41,7 +41,7 @@ require('dotenv').config()
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    threshold: 65,
+    threshold: 68,
     amqp1Url: process.env.AMQP1URL,
     amqp2Url: process.env.AMQP2URL || 'amqp://localhost'
   }

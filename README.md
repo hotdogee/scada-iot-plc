@@ -13,3 +13,5 @@ NODE_ENV=production sudo pm2 start grid-plc/amqp2-feathers.js --name amqp2-feath
 
 NODE_ENV=production sudo pm2 start grid-plc/amqp2-hz-amqp1.js --name amqp2-hz-amqp1 -- --threshold=55
 NODE_ENV=production sudo pm2 start grid-plc/amqp2-hz-amqp1.js --name amqp2-hz-amqp1 -- --threshold=65
+
+NODE_ENV=production sudo pm2 start grid-plc/rtu3-amqp2.js --name rtu3-amqp2 -- --serial=/dev/ttyUSB1

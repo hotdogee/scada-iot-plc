@@ -52,12 +52,12 @@ const button = new Gpio(argv.button, {
 button.on('interrupt', (level) => {
   if (level === buttonState) return
   buttonState = level
-  logger.debug('buttonState = %d', buttonState)
+  logger.debug('buttonState = %d (%s)', buttonState, buttonState === 1 ? 'released' : 'pressed')
   if (buttonState === buttonNormalState || valveLocked) return
   valveState = +!valveState
   valveLocked = true
   setTimeout(() => { valveLocked = false }, argv.wait)
-  logger.info('valveState = %d', valveState)
+  logger.info('valveState = %d (%s)', valveState, valveState === 1 ? 'CLOSED' : 'OPENED')
   relay.digitalWrite(valveState)
 })
 
@@ -93,7 +93,7 @@ const routingKey = '#.shutoff_valve1'
             valveState = relayNormalState
             valveLocked = true
             setTimeout(() => { valveLocked = false }, argv.wait)
-            logger.info('valveState = %d', valveState)
+            logger.info('valveState = %d (%s)', valveState, valveState === 1 ? 'CLOSED' : 'OPENED')
             relay.digitalWrite(valveState)
           }
         }
