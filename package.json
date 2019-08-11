@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@feathersjs/feathers": "^4.3.0-pre.2",
+    "@feathersjs/socketio-client": "^1.2.1",
+    "@feathersjs/authentication-client": "^4.3.0-pre.2",
+    "node-localstorage": "^1.3.1",
     "amqplib": "^0.5.3",
     "config": "^3.1.0",
     "console-stamp": "^0.2.7",
@@ -24,6 +28,8 @@
     "minimist": "^1.2.0",
     "modbus-rtu": "git+https://github.com/hotdogee/node-modbus-rtu.git",
     "node-persist": "^2.1.0",
+    "node-machine-id": "^1.1.12",
+    "node-webcrypto-ossl": "^1.0.48",
     "pigpio": "^1.2.2",
     "request": "^2.88.0",
     "serialport": "^7.1.5",
@@ -31,10 +37,12 @@
   },
   "devDependencies": {
     "eslint": "^5.16.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.17.2",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "prettier-eslint": "^9.0.0",
+    "prettier-eslint-cli": "^5.0.0"
   }
 }

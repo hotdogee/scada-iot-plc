@@ -1,13 +1,36 @@
 {
-  "standard.validate": [
-    "javascript"
+  "standard.validate": ["javascript", "vue"],
+  "standard.options": {
+    "parser": "babel-eslint",
+    "plugins": ["vue"]
+  },
+  "files.associations": {
+    "*.vue": "vue"
+  },
+  "eslint.alwaysShowStatus": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    {
+      "language": "vue",
+      "autoFix": true
+    }
   ],
-  "standard.autoFixOnSave": true,
   "prettier.eslintIntegration": true,
+  "prettier.trailingComma": "none",
   "prettier.singleQuote": true,
   "prettier.semi": false,
-  "eslint.autoFixOnSave": true,
-  "eslint.alwaysShowStatus": true,
+  "vetur.format.defaultFormatter.js": "prettier-eslint",
+  "vetur.validation.script": false,
+  "vetur.validation.template": false,
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "javascript.format.enable": true
+  "editor.formatOnSave": true,
+  "commitizen.showOutputChannel": "always",
+  "commitizen.subjectLength": 120,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cSpell.words": [
+    "scada"
+  ]
 }
