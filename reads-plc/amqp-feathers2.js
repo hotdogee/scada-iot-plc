@@ -28,7 +28,6 @@
 // (no data loss if internet fail, minimum data loss if power failure)
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
-const util = require('util')
 const amqplib = require('amqplib')
 const { api, socket } = require('../lib/api')
 const logger = require('../lib/logger')
