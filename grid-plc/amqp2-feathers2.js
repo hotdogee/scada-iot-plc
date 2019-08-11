@@ -35,7 +35,7 @@ const logger = require('../lib/logger')
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
     apiKey: process.env.API_KEY,
-    amqpUrl: process.env.AMQP2URL || 'amqp://localhost'
+    amqpUrl: 'amqp://localhost' // process.env.AMQP2URL ||
   }
 })
 
