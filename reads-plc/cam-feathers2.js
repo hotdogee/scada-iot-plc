@@ -83,13 +83,13 @@ const camList = [
       request.post(
         { url: service, formData, json: true, auth: { bearer } },
         function (err, res, body) {
-          logger.log(res.statusCode)
-          logger.log(res.headers['content-type']) // 'image/png'
+          logger.debug(res.statusCode)
+          logger.debug(res.headers['content-type']) // 'image/png'
           if (err) {
             logger.error('upload failed:', err)
             reject(err)
           }
-          logger.log('Upload successful!  Server responded with:', body)
+          logger.info('Upload successful!  Server responded with:', body)
           resolve(body)
         }
       )
@@ -97,5 +97,5 @@ const camList = [
     acc.push(result)
     return acc
   }, Promise.resolve([]))
-  logger.log('Final results: ', result)
+  logger.info('Final results: ', result)
 })()
