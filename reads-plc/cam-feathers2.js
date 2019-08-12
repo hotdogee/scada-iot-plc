@@ -89,7 +89,7 @@ const camList = [
             logger.error(err, { label: 'request.post' })
             reject(err)
           }
-          logger.info(JSON.stringify(body, null, 1), { label: 'request.post' })
+          logger.info(body, { label: 'request.post' })
           resolve(body)
         }
       )
@@ -97,5 +97,5 @@ const camList = [
     acc.push(result)
     return acc
   }, Promise.resolve([]))
-  logger.info(JSON.stringify(result, null, 1), { label: 'camList.reduce' })
+  logger.info(result, { label: 'camList.reduce' })
 })()
