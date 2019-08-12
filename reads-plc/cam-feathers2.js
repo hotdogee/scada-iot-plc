@@ -73,6 +73,7 @@ const camList = [
   }
 ]
 
+let i = 0
 ;(async function processCamList () {
   const result = await camList.reduce(async (p, s) => {
     const acc = await p
@@ -91,7 +92,7 @@ const camList = [
               //   }) // image/jpeg; charset="UTF-8"
               // }
               if (err) {
-                logger.error(err, { label: 'request.get' })
+                logger.error(err, { label: `${s.prefix}.request.get(${i})` })
                 reject(err)
               }
             }),
@@ -116,10 +117,10 @@ const camList = [
             //   }) // 'application/json; charset=utf-8'
             // }
             if (err) {
-              logger.error(err, { label: 'request.post' })
+              logger.error(err, { label: `${s.prefix}.request.post(${i})` })
               reject(err)
             }
-            logger.info(body, { label: 'request.post' })
+            logger.info(body, { label: `${s.prefix}.request.post(${i})` })
             resolve(body)
           }
         )
@@ -131,5 +132,7 @@ const camList = [
     return acc
   }, Promise.resolve([]))
   // logger.info(result, { label: 'camList.reduce' })
+  i += 1
+  setTimeout(processCamList, 100)
   return result
 })()
