@@ -75,42 +75,46 @@ const camList = [
 
 ;(async () => {
   const result = await camList.reduce(async (p, s) => {
-    const acc = await p
-    const result = await new Promise((resolve, reject) => {
-      const formData = {
-        // Pass a simple key-value pair
-        timestamp: new Date().toJSON(),
-        albumId: s.albumId,
-        file: {
-          value: request(s.photoUrl, { timeout: 1500 }, (err, res, body) => {
-            if (err) reject(err)
-          }),
-          options: {
-            // 'cam1-20190812-102939.jpg'
-            filename: `${s.prefix}-${new Date()
-              .toISOString()
-              .replace(/[-:]/g, '')
-              .replace(/\..+/, '')
-              .replace(/T/, '-')}.jpg`,
-            contentType: 'image/jpeg'
+    const acc = await
+    try {
+      const result = await new Promise((resolve, reject) => {
+        const formData = {
+          // Pass a simple key-value pair
+          timestamp: new Date().toJSON(),
+          albumId: s.albumId,
+          file: {
+            value: request(s.photoUrl, { timeout: 1500 }, (err, res, body) => {
+              if (err) reject(err)
+            }),
+            options: {
+              // 'cam1-20190812-102939.jpg'
+              filename: `${s.prefix}-${new Date()
+                .toISOString()
+                .replace(/[-:]/g, '')
+                .replace(/\..+/, '')
+                .replace(/T/, '-')}.jpg`,
+              contentType: 'image/jpeg'
+            }
           }
         }
-      }
-      request.post(
-        { url: service, formData, json: true, auth: { bearer } },
-        (err, res, body) => {
-          logger.debug(res.statusCode) // 201
-          logger.debug(res.headers['content-type']) // 'application/json; charset=utf-8'
-          if (err) {
-            logger.error(err, { label: 'request.post' })
-            reject(err)
+        request.post(
+          { url: service, formData, json: true, auth: { bearer } },
+          (err, res, body) => {
+            logger.debug(res.statusCode) // 201
+            logger.debug(res.headers['content-type']) // 'application/json; charset=utf-8'
+            if (err) {
+              logger.error(err, { label: 'request.post' })
+              reject(err)
+            }
+            logger.info(body, { label: 'request.post' })
+            resolve(body)
           }
-          logger.info(body, { label: 'request.post' })
-          resolve(body)
-        }
-      )
-    })
-    acc.push(result)
+        )
+      })
+      acc.push(result)
+    } catch (error) {
+      acc.push(error)
+    }
     return acc
   }, Promise.resolve([]))
   logger.info(result, { label: 'camList.reduce' })
