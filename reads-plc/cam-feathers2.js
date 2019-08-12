@@ -30,6 +30,8 @@
 // Write to csv file (10MB per file with total max size limit 8GB)
 // Send to RabbitMQ where workers try to send to server
 // (no data loss if internet fail, minimum data loss if power failure)
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 const logger = require('../lib/logger')
 // jpeg, 2048x1536
 const request = require('request')
