@@ -35,7 +35,6 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 const logger = require('../lib/logger')
 // jpeg, 2048x1536
 const request = require('request')
-const FormData = require('form-data')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
@@ -49,21 +48,25 @@ const service = argv.apiUrl + '/images'
 
 const camList = [
   {
+    prefix: 'cam1',
     albumId: '5d50734cdcb7d22aa7057a88',
     photoUrl:
       'http://plc:5ZHGwbbShBEzG2Kv@192.168.2.85/Streaming/channels/3/picture'
   },
   {
+    prefix: 'cam2',
     albumId: '5d50734cdcb7d22aa7057a89',
     photoUrl:
       'http://plc:tssXr5DtJPdg1gCA@192.168.2.86/Streaming/channels/3/picture'
   },
   {
+    prefix: 'cam3',
     albumId: '5d50734cdcb7d22aa7057a8a',
     photoUrl:
       'http://plc:pZZ4L3lqdGLyxiLZ@192.168.2.87/Streaming/channels/3/picture'
   },
   {
+    prefix: 'cam4',
     albumId: '5d50734cdcb7d22aa7057a8b',
     photoUrl:
       'http://plc:H1gN9WURTvgBRBHj@192.168.2.88/Streaming/channels/3/picture'
@@ -73,22 +76,29 @@ const camList = [
 ;(async () => {
   const result = await camList.reduce(async (p, s) => {
     const acc = await p
-    // const formData = new FormData()
-    // formData.append('timestamp', new Date().toJSON())
-    // formData.append('albumId', s.albumId)
-    // formData.append('file', request(s.photoUrl))
-    // const formData = {
-    //   // Pass a simple key-value pair
-    //   timestamp: new Date().toJSON(),
-    //   albumId: s.albumId,
-    //   file: request(s.photoUrl)
-    // }
+    const formData = {
+      // Pass a simple key-value pair
+      timestamp: new Date().toJSON(),
+      albumId: s.albumId,
+      file: {
+        value: request(s.photoUrl),
+        options: {
+          // 'cam1-20190812-102939.jpg'
+          filename: `${s.prefix}-${new Date()
+            .toISOString()
+            .replace(/[-:]/g, '')
+            .replace(/\..+/, '')
+            .replace(/T/, '-')}.jpg`,
+          contentType: 'image/jpeg'
+        }
+      }
+    }
     const result = await new Promise((resolve, reject) => {
-      const r = request.post(
-        { url: service, json: true, auth: { bearer } },
+      request.post(
+        { url: service, formData, json: true, auth: { bearer } },
         function (err, res, body) {
-          logger.debug(res.statusCode)
-          logger.debug(res.headers['content-type']) // 'image/png'
+          logger.debug(res.statusCode) // 201
+          logger.debug(res.headers['content-type']) // 'application/json; charset=utf-8'
           if (err) {
             logger.error(err, { label: 'request.post' })
             reject(err)
@@ -97,10 +107,6 @@ const camList = [
           resolve(body)
         }
       )
-      const formData = r.form()
-      formData.append('timestamp', new Date().toJSON())
-      formData.append('albumId', s.albumId)
-      formData.append('file', request(s.photoUrl))
     })
     acc.push(result)
     return acc
