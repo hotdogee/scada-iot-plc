@@ -76,27 +76,29 @@ const camList = [
 ;(async () => {
   const result = await camList.reduce(async (p, s) => {
     const acc = await p
-    const formData = {
-      // Pass a simple key-value pair
-      timestamp: new Date().toJSON(),
-      albumId: s.albumId,
-      file: {
-        value: request(s.photoUrl),
-        options: {
-          // 'cam1-20190812-102939.jpg'
-          filename: `${s.prefix}-${new Date()
-            .toISOString()
-            .replace(/[-:]/g, '')
-            .replace(/\..+/, '')
-            .replace(/T/, '-')}.jpg`,
-          contentType: 'image/jpeg'
+    const result = await new Promise((resolve, reject) => {
+      const formData = {
+        // Pass a simple key-value pair
+        timestamp: new Date().toJSON(),
+        albumId: s.albumId,
+        file: {
+          value: request(s.photoUrl, { timeout: 1500 }, (err, res, body) => {
+            if (err) reject(err)
+          }),
+          options: {
+            // 'cam1-20190812-102939.jpg'
+            filename: `${s.prefix}-${new Date()
+              .toISOString()
+              .replace(/[-:]/g, '')
+              .replace(/\..+/, '')
+              .replace(/T/, '-')}.jpg`,
+            contentType: 'image/jpeg'
+          }
         }
       }
-    }
-    const result = await new Promise((resolve, reject) => {
       request.post(
         { url: service, formData, json: true, auth: { bearer } },
-        function (err, res, body) {
+        (err, res, body) => {
           logger.debug(res.statusCode) // 201
           logger.debug(res.headers['content-type']) // 'application/json; charset=utf-8'
           if (err) {
