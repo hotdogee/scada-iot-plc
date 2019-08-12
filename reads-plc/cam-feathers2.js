@@ -73,7 +73,7 @@ const camList = [
   }
 ]
 
-;(async () => {
+;(async function processCamList () {
   const result = await camList.reduce(async (p, s) => {
     const acc = await p
     try {
@@ -84,12 +84,12 @@ const camList = [
           albumId: s.albumId,
           file: {
             value: request(s.photoUrl, { timeout: 1500 }, (err, res, body) => {
-              if (res) {
-                logger.debug(res.statusCode, { label: 'request.get' }) // 201
-                logger.debug(res.headers['content-type'], {
-                  label: 'request.get'
-                }) // 'application/json; charset=utf-8'
-              }
+              // if (res) {
+              //   logger.debug(res.statusCode, { label: 'request.get' }) // 201
+              //   logger.debug(res.headers['content-type'], {
+              //     label: 'request.get'
+              //   }) // image/jpeg; charset="UTF-8"
+              // }
               if (err) {
                 logger.error(err, { label: 'request.get' })
                 reject(err)
@@ -109,12 +109,12 @@ const camList = [
         request.post(
           { url: service, formData, json: true, auth: { bearer } },
           (err, res, body) => {
-            if (res) {
-              logger.debug(res.statusCode, { label: 'request.post' }) // 201
-              logger.debug(res.headers['content-type'], {
-                label: 'request.post'
-              }) // 'application/json; charset=utf-8'
-            }
+            // if (res) {
+            //   logger.debug(res.statusCode, { label: 'request.post' }) // 201
+            //   logger.debug(res.headers['content-type'], {
+            //     label: 'request.post'
+            //   }) // 'application/json; charset=utf-8'
+            // }
             if (err) {
               logger.error(err, { label: 'request.post' })
               reject(err)
@@ -130,5 +130,6 @@ const camList = [
     }
     return acc
   }, Promise.resolve([]))
-  logger.info(result, { label: 'camList.reduce' })
+  // logger.info(result, { label: 'camList.reduce' })
+  return result
 })()
