@@ -84,10 +84,12 @@ const camList = [
           albumId: s.albumId,
           file: {
             value: request(s.photoUrl, { timeout: 1500 }, (err, res, body) => {
-              logger.debug(res.statusCode, { label: 'request.get' }) // 201
-              logger.debug(res.headers['content-type'], {
-                label: 'request.get'
-              }) // 'application/json; charset=utf-8'
+              if (res) {
+                logger.debug(res.statusCode, { label: 'request.get' }) // 201
+                logger.debug(res.headers['content-type'], {
+                  label: 'request.get'
+                }) // 'application/json; charset=utf-8'
+              }
               if (err) {
                 logger.error(err, { label: 'request.get' })
                 reject(err)
@@ -107,8 +109,12 @@ const camList = [
         request.post(
           { url: service, formData, json: true, auth: { bearer } },
           (err, res, body) => {
-            logger.debug(res.statusCode, { label: 'request.post' }) // 201
-            logger.debug(res.headers['content-type'], { label: 'request.post' }) // 'application/json; charset=utf-8'
+            if (res) {
+              logger.debug(res.statusCode, { label: 'request.post' }) // 201
+              logger.debug(res.headers['content-type'], {
+                label: 'request.post'
+              }) // 'application/json; charset=utf-8'
+            }
             if (err) {
               logger.error(err, { label: 'request.post' })
               reject(err)
