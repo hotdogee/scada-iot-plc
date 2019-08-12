@@ -75,7 +75,7 @@ const camList = [
 
 ;(async () => {
   const result = await camList.reduce(async (p, s) => {
-    const acc = await
+    const acc = await p
     try {
       const result = await new Promise((resolve, reject) => {
         const formData = {
