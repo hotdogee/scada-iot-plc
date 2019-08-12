@@ -73,11 +73,10 @@ const camList = [
 ;(async () => {
   const result = await camList.reduce(async (p, s) => {
     const acc = await p
-    request.get(s.photoUrl)
-    const formData = new FormData()
-    formData.append('timestamp', new Date().toJSON())
-    formData.append('albumId', s.albumId)
-    formData.append('file', request(s.photoUrl))
+    // const formData = new FormData()
+    // formData.append('timestamp', new Date().toJSON())
+    // formData.append('albumId', s.albumId)
+    // formData.append('file', request(s.photoUrl))
     // const formData = {
     //   // Pass a simple key-value pair
     //   timestamp: new Date().toJSON(),
@@ -85,8 +84,8 @@ const camList = [
     //   file: request(s.photoUrl)
     // }
     const result = await new Promise((resolve, reject) => {
-      request.post(
-        { url: service, formData, json: true, auth: { bearer } },
+      const r = request.post(
+        { url: service, json: true, auth: { bearer } },
         function (err, res, body) {
           logger.debug(res.statusCode)
           logger.debug(res.headers['content-type']) // 'image/png'
@@ -98,6 +97,10 @@ const camList = [
           resolve(body)
         }
       )
+      const formData = r.form()
+      formData.append('timestamp', new Date().toJSON())
+      formData.append('albumId', s.albumId)
+      formData.append('file', request(s.photoUrl))
     })
     acc.push(result)
     return acc
