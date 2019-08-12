@@ -35,6 +35,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 const logger = require('../lib/logger')
 // jpeg, 2048x1536
 const request = require('request')
+const FormData = require('form-data')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
@@ -73,12 +74,16 @@ const camList = [
   const result = await camList.reduce(async (p, s) => {
     const acc = await p
     request.get(s.photoUrl)
-    const formData = {
-      // Pass a simple key-value pair
-      timestamp: new Date().toJSON(),
-      albumId: s.albumId,
-      file: request(s.photoUrl)
-    }
+    const formData = new FormData()
+    formData.append('timestamp', new Date().toJSON())
+    formData.append('albumId', s.albumId)
+    formData.append('file', request(s.photoUrl))
+    // const formData = {
+    //   // Pass a simple key-value pair
+    //   timestamp: new Date().toJSON(),
+    //   albumId: s.albumId,
+    //   file: request(s.photoUrl)
+    // }
     const result = await new Promise((resolve, reject) => {
       request.post(
         { url: service, formData, json: true, auth: { bearer } },
