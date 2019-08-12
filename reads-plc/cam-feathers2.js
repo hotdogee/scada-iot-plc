@@ -51,22 +51,22 @@ const camList = [
     albumId: '5d50734cdcb7d22aa7057a88',
     photoUrl:
       'http://plc:5ZHGwbbShBEzG2Kv@192.168.2.85/Streaming/channels/3/picture'
+  },
+  {
+    albumId: '5d50734cdcb7d22aa7057a89',
+    photoUrl:
+      'http://plc:tssXr5DtJPdg1gCA@192.168.2.86/Streaming/channels/3/picture'
+  },
+  {
+    albumId: '5d50734cdcb7d22aa7057a8a',
+    photoUrl:
+      'http://plc:pZZ4L3lqdGLyxiLZ@192.168.2.87/Streaming/channels/3/picture'
+  },
+  {
+    albumId: '5d50734cdcb7d22aa7057a8b',
+    photoUrl:
+      'http://plc:H1gN9WURTvgBRBHj@192.168.2.88/Streaming/channels/3/picture'
   }
-  // {
-  //   albumId: '5d50734cdcb7d22aa7057a89',
-  //   photoUrl:
-  //     'http://plc:tssXr5DtJPdg1gCA@192.168.2.86/Streaming/channels/3/picture'
-  // },
-  // {
-  //   albumId: '5d50734cdcb7d22aa7057a8a',
-  //   photoUrl:
-  //     'http://plc:pZZ4L3lqdGLyxiLZ@192.168.2.87/Streaming/channels/3/picture'
-  // },
-  // {
-  //   albumId: '5d50734cdcb7d22aa7057a8b',
-  //   photoUrl:
-  //     'http://plc:H1gN9WURTvgBRBHj@192.168.2.88/Streaming/channels/3/picture'
-  // }
 ]
 
 ;(async () => {
@@ -86,10 +86,10 @@ const camList = [
           logger.debug(res.statusCode)
           logger.debug(res.headers['content-type']) // 'image/png'
           if (err) {
-            logger.error('upload failed:', err)
+            logger.error(err, { label: 'request.post' })
             reject(err)
           }
-          logger.info('Upload successful!  Server responded with:', body)
+          logger.info(JSON.stringify(body, null, 1), { label: 'request.post' })
           resolve(body)
         }
       )
@@ -97,5 +97,5 @@ const camList = [
     acc.push(result)
     return acc
   }, Promise.resolve([]))
-  logger.info('Final results: ', result)
+  logger.info(JSON.stringify(result, null, 1), { label: 'camList.reduce' })
 })()
