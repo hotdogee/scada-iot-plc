@@ -108,7 +108,7 @@ let i = 0
           }
         }
         request.post(
-          { url: service, formData, json: true, auth: { bearer } },
+          { url: service, formData, json: true, auth: { bearer }, timeout: 4500 },
           (err, res, body) => {
             // if (res) {
             //   logger.debug(res.statusCode, { label: 'request.post' }) // 201
