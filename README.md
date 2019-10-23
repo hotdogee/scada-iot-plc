@@ -18,8 +18,17 @@ NODE_ENV=production sudo pm2 start grid-plc/amqp2-hz-amqp1.js --name amqp2-hz-am
 NODE_ENV=production sudo pm2 start grid-plc/rtu3-amqp2.js --name rtu3-amqp2 -- --serial=/dev/ttyUSB1
 
 # scada-iot 2.0
-## geo9-pi3p1
-NODE_ENV=production sudo pm2 start reads-plc/amqp-feathers2.js --name amqp-feathers2
+
+## geo9-pi4-4g-1
 NODE_ENV=production sudo pm2 start reads-plc/cam-feathers2.js --name cam-feathers2
-## geo9-pi3p2
+NODE_ENV=production sudo pm2 start dcs-plc/amqp-valve-control.js --name amqp-valve-control
+NODE_ENV=production sudo pm2 start reads-plc/amqp-csv.js --name amqp-csv
+NODE_ENV=production sudo pm2 start reads-plc/amqp-feathers2.js --name amqp-feathers2
+NODE_ENV=production sudo pm2 start reads-plc/rtu-amqp.js --name rtu-amqp -- --serial=/dev/ttyUSB0
+
+## geo9-pi4-4g-2
+NODE_ENV=production sudo pm2 start grid-plc/amqp2-csv.js --name amqp2-csv
+NODE_ENV=production sudo pm2 start grid-plc/rtu3-amqp2.js --name rtu3-amqp2 -- --serial=/dev/ttyUSB1
+NODE_ENV=production sudo pm2 start grid-plc/amqp2-hz-amqp1.js --name amqp2-hz-amqp1 -- --threshold=68
 NODE_ENV=production sudo pm2 start grid-plc/amqp2-feathers2.js --name amqp2-feathers2
+NODE_ENV=production sudo pm2 start grid-plc/rtu2-amqp2.js --name rtu2-amqp2 -- --serial=/dev/ttyUSB0
