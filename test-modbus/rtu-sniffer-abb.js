@@ -21,8 +21,9 @@ if (/^win/.test(process.platform))
     port = 'COM11'
 
 //create ModbusMaster instance and pass the serial port object
+console.log(`Using port: ${port}`)
 var master = new modbus.ModbusMaster(new SerialPort(port, {
-    baudrate: 19200
+    baudRate: 19200
 }), {
     endPacketTimeout: 19,
     queueTimeout: 50,
@@ -73,14 +74,15 @@ function process_error (e) {
 async function async_all_read () {
     var promises = []
     // LMAG
-    var addr = 22
+    var addr = 11
     // var promises = []
     //promises.push(master.readHoldingRegisters(addr, 30001, 8, parse_uint32).catch(console.error))
     //promises.push(master.readHoldingRegisters(addr, 30011, 8, parse_float2).catch(console.error))
-    for (var r = 4100; r < 65535; r++) {
+    for (var r = 180; r <= 200; r++) {
         // LMAG
-        var addr = 22
-        result = await master.readInputRegisters(addr, r, 2, parse_none).catch(process_error)
+        var addr = 11
+        result = await master.readHoldingRegisters(addr, r, 1, parse_none).catch(process_error)
+        console.log(result)
         if (result && result.length > 0) {
             var buffer = result
             var hex_str = buffer.toString('hex').toUpperCase()
@@ -88,10 +90,11 @@ async function async_all_read () {
             buffer.swap16()
             console.log(r, hex_str, buffer.readInt32LE(), buffer.readFloatLE(), floatbe)
         }
-        if (r % 100 == 0)
-            console.log(r)
+        // if (r % 100 == 0)
+        //     console.log(r)
     }
     //async_all_read()
+    process.exit()
 }
 async_all_read()
 // [[19:21:15.077]] [LOG]   4112 '4096147B' 343621782 1.2684998911750533e-26
