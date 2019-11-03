@@ -55,11 +55,16 @@ const queueName = 'feathers'
 socket.on('connect', async () => {
   if (!argv.apiKey) throw new Error('apiKey required')
   // authenticate socket with apiKey
-  const auth = await api.authenticate({
-    strategy: 'jwt',
-    accessToken: argv.apiKey
-  })
-  logger.info(auth, { label: 'authenticated' })
+  try {
+    const auth = await api.authenticate({
+      strategy: 'jwt',
+      accessToken: argv.apiKey
+    })
+    logger.info(auth, { label: 'authenticated' })
+  } catch (error) {
+    logger.error('supervisor.authenticate:', error)
+    process.exit()
+  }
 
   // connect to ampq server, connection is a ChannelModel object
   // 'amqp://localhost'
