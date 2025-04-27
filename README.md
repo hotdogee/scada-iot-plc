@@ -1,6 +1,6 @@
 # SCADA/IoT Software-defined PLC
 
-This repository contains the source code for the Supervisory Control and Data Acquisition (SCADA) / Internet of Things (IoT) Programmable Logic Controller (PLC) system developed for a research-grade geothermal power pilot project in Taiwan.
+> This repository contains the source code for the Supervisory Control and Data Acquisition (SCADA) / Internet of Things (IoT) Software-defined Programmable Logic Controller (PLC) system developed for a research-grade geothermal power pilot project in Taiwan.
 
 ## Table of Contents
 
