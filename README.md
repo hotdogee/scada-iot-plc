@@ -50,10 +50,14 @@ The system employs a distributed architecture leveraging modern IoT principles c
 
 ### Hardware Components
 
-- **Central Controller:** Raspberry Pi serves as the main processing unit.
+- **Edge Controller:** Raspberry Pi serves as the main processing unit.
 - **Remote Terminal Units (RTUs):** Industrial controllers interfacing with field devices.
-- **Sensors:** Temperature (RTD PT100), Pressure (Danfoss MBS 3000), Flow (Magnetic), Electrical (Voltage, Current, Frequency, Power), etc.
-- **Actuators:** Valves, Alarms, and Inverters (ABB PVI-12.5-TL-OUTD) managed by the system.
+- **Sensors:** Temperature (RTD PT100), Pressure (Danfoss MBS 3000), Electromagnetic Flowmeters (BMS, LDG), Coriolis Flowmeters (E+H, Micro Motion), Vortex Flowmeters (MIK-LUGB), pH Meters, Optical/Hall Effect RPM Sensors, Electrical (Voltage, Current, Frequency, Power), etc.
+- **Actuators:** Valves, Alarms, and Inverters (ABB PVI-12.5-TL-OUTD).
+- **Networking:** Ethernet Switches, WiFi Access Points, 4G/LTE Routers, USB-to-RS485/232 Converters.
+- **Cameras:** IP Cameras with on-site NAS recording.
+- **Power:** Mean Well Power Supplies (24VDC, 12VDC, 5VDC).
+- **Analysis Tools:** Hioki Power Analyzers, FLIR Thermal Cameras, High-Speed Cameras.
 
 ### Software Backend
 
@@ -252,4 +256,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 - **Lanyang Geothermal Corp.**
-  - Han Lin <hotdogee@gmail.com> (https://github.com/hotdogee)
+- **Lead Developer:** Han Lin <hotdogee@gmail.com> (https://github.com/hotdogee)
